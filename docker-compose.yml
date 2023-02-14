@@ -1,0 +1,57 @@
+version: '3.8'
+services:
+
+#  app:
+#    image: #
+#    build:
+#      context: .
+#    container_name: app
+#    depends_on:
+#      - cache
+#      - db
+#      - elasticsearch
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/compose-postgres
+#      - SPRING_DATASOURCE_USERNAME=compose-postgres
+#      - SPRING_DATASOURCE_PASSWORD=compose-postgres
+#      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+  cache:
+    container_name: cache-container-employees
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81maybeunsafe
+    volumes:
+      - cache:/data
+
+  db:
+    container_name: ps-container-employees
+    image: postgres:13.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=employees
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/ar/lib/postgresql/data
+
+  elasticsearch:
+    container_name: es-container-employees
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.6.1
+    environment:
+      - xpack.security.enabled=false
+      - "discovery.type=single-node"
+    ports:
+      - '9200:9200'
+
+volumes:
+  cache:
+    driver: local
+  db:
+    driver: local
+# elasticsearch:
+#    driver: local
