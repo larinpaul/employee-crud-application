@@ -10,7 +10,8 @@ public class EmployeeCrudApplication {
     public static void main(String[] args) {
         SpringApplication.run(EmployeeCrudApplication.class, args);
 
-
+        EmployeeService callToAction = new EmployeeService();
+        callToAction.printMotivationalMessage();
     }
 
 }
