@@ -1,35 +1,74 @@
 package com.example.employeecrudapplication.service;
 
 import com.example.employeecrudapplication.data.repository.EmployeeRepository;
+import com.example.employeecrudapplication.mapper.EmployeeMapper;
 import com.example.employeecrudapplication.model.Employee;
 import com.example.employeecrudapplication.model.EmployeeDto;
+import com.example.employeecrudapplication.validator.EmployeeValidator;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class EmployeeService {
-    // заинжектить в сервисе репозиторий как ты делал в контроллере (а ещё лучше через Ломбок)
-    // и создать методы как в контроллере, гетбайайти и тд.
-    // затем инжектим сервис в контроллер и вызываем в контроллере соответствующие методы из сервиса
 
-    // @ 3. Constructor Injection With Lombok https://www.baeldung.com/spring-injection-lombok
     private final EmployeeRepository employeeRepository;
-    private final EmployeeValidator validator;
+    private final EmployeeValidator employeeValidator;
+    private final EmployeeMapper employeeMapper;
 
-    public Employee createEmployee(EmployeeDto employee) {
-        validator.validToCreate(employee);
-        // Сделать Маппер.
-        // Берешь EmployeeDto, создаешь объект класса Employee
-        // Прокидываешь поля из DTO в Entity, то есть из EmployeeDto берём поля, и каждое поле маппим в Employee
-        // На выходе получится объект класса Employee, который сохраняешь в базу данных
+    public Long create(EmployeeDto employeeDto) {
+        employeeValidator.validToCreate(employeeDto);
 
-        return this.employeeRepository.save(employee);
+        Employee employee = employeeMapper.toEntity(employeeDto);
+
+        return employeeRepository.save(employee).getId();
     }
 
+    public List<EmployeeDto> findAll() {
+        List<Employee> all = employeeRepository.findAll();
 
+        List<EmployeeDto> employeesDto = new ArrayList<>();
 
+        for (Employee employee : all) {
+            EmployeeDto employeeDto = employeeMapper.toDto(employee);
+            employeesDto.add(employeeDto);
+        } // Вообще это можно сделать в одну конструкцию, использовав streamAPI (можно поискать потом)
+        return employeesDto;
+    }
 
+    public EmployeeDto findById(Long employeeId) {
+
+        Optional<Employee> byId = employeeRepository.findById(employeeId);
+
+        if (byId.isEmpty()) { // Если не сделать эту проверку, то будет НЕхорошо
+            throw new EntityNotFoundException("Employee not found");
+        }
+        Employee employee = byId.get();
+
+        return employeeMapper.toDto(employee);
+    }
+
+    public EmployeeDto update(Long employeeId, EmployeeDto employeeDto) { // DTO - Мы берём от пользователя
+        employeeValidator.validToUpdate(employeeDto);
+
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found for this id :: " + employeeId));
+
+        employee.setEmail(employeeDto.getEmail());
+        employee.setFirstName(employeeDto.getFirstName());
+        employee.setLastName(employeeDto.getLastName());
+
+        Employee updatedEmployee = employeeRepository.save(employee);
+
+        return employeeMapper.toDto(updatedEmployee);
+    }
+
+    public void delete(Long employeeId) {
+        employeeRepository.deleteById(employeeId);
+    }
 }
