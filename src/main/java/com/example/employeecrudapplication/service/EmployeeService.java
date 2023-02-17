@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,16 +40,10 @@ public class EmployeeService {
         return employeesDto;
     }
 
-    public EmployeeDto findById(Long employeeId) {
-
-        Optional<Employee> byId = employeeRepository.findById(employeeId);
-
-        if (byId.isEmpty()) { // Если не сделать эту проверку, то будет НЕхорошо
-            throw new EntityNotFoundException("Employee not found");
-        }
-        Employee employee = byId.get();
-
-        return employeeMapper.toDto(employee);
+    public EmployeeDto findById(Long employeeId) { // Не воспринимай метод как магию, РАЗБЕРИСЬ что в нем происходит
+        return employeeRepository.findById(employeeId)
+                .map(employeeMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
     }
 
     public EmployeeDto update(Long employeeId, EmployeeDto employeeDto) { // DTO - Мы берём от пользователя
