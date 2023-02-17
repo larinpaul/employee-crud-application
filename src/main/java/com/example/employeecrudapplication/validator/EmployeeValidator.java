@@ -17,7 +17,7 @@ public class EmployeeValidator {
         if (StringUtils.isBlank(email)) {
             throw new EmployeeValidationException("You haven't provided an Email");
         }
-        if (!patternMatches(email, emailRegexPattern)) {
+        if (!patternMatches(email)) {
             throw new EmployeeValidationException("The Email you provided is not properly formatted");
         }
     }
