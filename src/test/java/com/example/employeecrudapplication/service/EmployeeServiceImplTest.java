@@ -1,21 +1,16 @@
 package com.example.employeecrudapplication.service;
 
 import com.example.employeecrudapplication.data.repository.EmployeeRepository;
-import com.example.employeecrudapplication.mapper.EmployeeMapper;
 import com.example.employeecrudapplication.mapper.EmployeeMapperImpl;
 import com.example.employeecrudapplication.model.domain.Employee;
 import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import com.example.employeecrudapplication.validator.EmployeeValidator;
-import com.example.employeecrudapplication.service.EmployeeServiceImp;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.ArrayList;
@@ -26,14 +21,13 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 
 @SpringJUnitConfig
-class EmployeeServiceImpTest {
+class EmployeeServiceImplTest {
 
     @InjectMocks // Данная аннотация указывает на то, что все аннотации будут заинжекчены сюда
-    private EmployeeServiceImp employeeService; // Это реальный объект, который мы будем тестировать
+    private EmployeeServiceImpl employeeService; // Это реальный объект, который мы будем тестировать
     @Mock
     private EmployeeRepository employeeRepository;
     @Mock
