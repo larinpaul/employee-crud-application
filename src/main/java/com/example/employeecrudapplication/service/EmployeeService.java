@@ -1,6 +1,6 @@
 package com.example.employeecrudapplication.service;
 
-import com.example.employeecrudapplication.model.EmployeeDto;
+import com.example.employeecrudapplication.model.dto.EmployeeDto;
 
 import java.util.List;
 

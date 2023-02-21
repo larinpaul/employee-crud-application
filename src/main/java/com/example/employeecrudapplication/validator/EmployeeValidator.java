@@ -1,7 +1,7 @@
 package com.example.employeecrudapplication.validator;
 
 import com.example.employeecrudapplication.exception.EmployeeValidationException;
-import com.example.employeecrudapplication.model.EmployeeDto;
+import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 

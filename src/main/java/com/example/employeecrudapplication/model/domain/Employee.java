@@ -1,4 +1,4 @@
-package com.example.employeecrudapplication.model;
+package com.example.employeecrudapplication.model.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

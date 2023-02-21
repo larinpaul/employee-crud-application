@@ -2,8 +2,8 @@ package com.example.employeecrudapplication.service;
 
 import com.example.employeecrudapplication.data.repository.EmployeeRepository;
 import com.example.employeecrudapplication.mapper.EmployeeMapper;
-import com.example.employeecrudapplication.model.Employee;
-import com.example.employeecrudapplication.model.EmployeeDto;
+import com.example.employeecrudapplication.model.domain.Employee;
+import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import com.example.employeecrudapplication.validator.EmployeeValidator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +38,13 @@ public class EmployeeServiceImp implements EmployeeService {
             employeesDto.add(employeeDto);
         } // Вообще это можно сделать в одну конструкцию, использовав streamAPI (можно поискать потом)
         return employeesDto;
+        // Для тестирования мы сперва МОКАЕМ репозиторий
+        // Мок ничего не может возвращаеть,
+        // Поэтому findAll мы можем застабить
+        //
+        // И здесь ещё намечается один спай.
+        // Вообще это маппер, но это долго, поэтому можно иногда
+        // использовать спай.
     }
 
     public EmployeeDto findById(Long employeeId) { // Не воспринимай метод как магию, РАЗБЕРИСЬ что в нем происходит

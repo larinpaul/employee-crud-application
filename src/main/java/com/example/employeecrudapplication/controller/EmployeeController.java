@@ -1,6 +1,6 @@
 package com.example.employeecrudapplication.controller;
 
-import com.example.employeecrudapplication.model.EmployeeDto;
+import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import com.example.employeecrudapplication.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
