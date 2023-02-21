@@ -5,12 +5,11 @@ import com.example.employeecrudapplication.mapper.EmployeeMapperImpl;
 import com.example.employeecrudapplication.model.domain.Employee;
 import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import com.example.employeecrudapplication.validator.EmployeeValidator;
+import org.assertj.core.api.JUnitSoftAssertions;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
+import org.mockito.*;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.ArrayList;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 
 @SpringJUnitConfig
@@ -34,6 +33,47 @@ class EmployeeServiceImplTest {
     private EmployeeValidator employeeValidator;
     @Spy
     private EmployeeMapperImpl employeeMapper;
+
+    @Test
+    @DisplayName("Testing create if valid")
+    void testCreate() {
+        // Given
+        Employee sampleEmployee = new Employee();
+        sampleEmployee.setFirstName("Tester");
+        sampleEmployee.setLastName("Testily");
+        sampleEmployee.setEmail("tester.testily@mail.com");
+
+        Employee expected = new Employee();
+        expected.setFirstName("Tester");
+        expected.setLastName("Testily");
+        expected.setEmail("tester.testily@mail.com");
+        expected.setId(1L);
+
+        // Стаб - это переопредление поведения какого-либо метода
+        Mockito.when(employeeRepository.save(any())).thenReturn(expected);
+
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setFirstName("Tester");
+        employeeDto.setLastName("Testily");
+        employeeDto.setEmail("tester.testily@mail.com");
+
+        // When (calling a tested method or something else, the "lab rabbit")
+        Long actual = employeeService.create(employeeDto);
+
+        // Then
+        verify(employeeRepository, times(1)).save(sampleEmployee);
+        assertEquals(expected.getId(), actual);
+    }
+
+    // CREATE UNHAPPY CASES FOR CREATE
+    // Смотрим на метод, и ищем все опасные моменты
+    //
+//    @Test
+//    @DisplayName("Testing create if invalid id")
+//    void testCreateInvalidEmail {
+//
+//    }
+
 
     @Test
     @DisplayName("Testing find by Id")
@@ -86,47 +126,31 @@ class EmployeeServiceImplTest {
 
         assertEquals(employeeDtoList.size(), actual.size());
 
-//        for (int i = 0; i < employeeDtoList.size(); i++) {
-//            assertEquals(employeeDtoList.get(i).getFirstName(), actual.get(i).getFirstName());
-//            assertEquals(employeeDtoList.get(i).getLastName(), actual.get(i).getLastName());
-//            assertEquals(employeeDtoList.get(i).getEmail(), actual.get(i).getEmail());
-//        }
-//
-//        int i = 0; // The so-called "enhanced loop", aka for-each loop
-//        for (EmployeeDto expectedDto : employeeDtoList) {
-//            EmployeeDto actualDto = actual.get(i++);
-//            assertEquals(expectedDto.getFirstName(), actualDto.getFirstName());
-//            assertEquals(expectedDto.getLastName(), actualDto.getLastName());
-//            assertEquals(expectedDto.getEmail(), actualDto.getEmail());
-//        }
+        for (int i = 0; i < employeeDtoList.size(); i++) {
+            assertEquals(employeeDtoList.get(i).getFirstName(), actual.get(i).getFirstName());
+            assertEquals(employeeDtoList.get(i).getLastName(), actual.get(i).getLastName());
+            assertEquals(employeeDtoList.get(i).getEmail(), actual.get(i).getEmail());
+        }
+
+        int i = 0; // The so-called "enhanced loop", aka for-each loop
+        for (EmployeeDto expectedDto : employeeDtoList) {
+            EmployeeDto actualDto = actual.get(i++);
+            assertEquals(expectedDto.getFirstName(), actualDto.getFirstName());
+            assertEquals(expectedDto.getLastName(), actualDto.getLastName());
+            assertEquals(expectedDto.getEmail(), actualDto.getEmail());
+        }
 
         // Let's try to use a method reference in a lambda expression to simplify the loop
         /// To be honest, though, I don't see any "method references" here
         /// Maybe I just don't understand what a method reference is, I thought it was ::
-        IntStream.range(0, employeeDtoList.size()).forEach(i -> {
-            assertEquals(employeeDtoList.get(i).getFirstName(), actual.get(i).getFirstName());
-            assertEquals(employeeDtoList.get(i).getLastName(), actual.get(i).getLastName());
-            assertEquals(employeeDtoList.get(i).getEmail(), actual.get(i).getEmail());
-        });
+//        IntStream.range(0, employeeDtoList.size()).forEach(i -> {
+//            assertEquals(employeeDtoList.get(i).getFirstName(), actual.get(i).getFirstName());
+//            assertEquals(employeeDtoList.get(i).getLastName(), actual.get(i).getLastName());
+//            assertEquals(employeeDtoList.get(i).getEmail(), actual.get(i).getEmail());
+//        });
 
 
     }
-
-    public List<EmployeeDto> findAll() {
-        List<Employee> all = employeeRepository.findAll();
-
-        List<EmployeeDto> employeesDto = new ArrayList<>();
-
-        for (Employee employee : all) {
-            EmployeeDto employeeDto = employeeMapper.toDto(employee);
-            employeesDto.add(employeeDto);
-        } // Вообще это можно сделать в одну конструкцию, использовав streamAPI (можно поискать потом)
-        return employeesDto;
-
-    }
-
-
-
 
 
 }
