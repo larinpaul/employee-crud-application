@@ -29,16 +29,30 @@ dependencies {
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
-    runtimeOnly 'org.postgresql:postgresql'
+
+    implementation 'io.rest-assured:rest-assured:5.3.0'
+//    implementation 'org.json:json:20220924'
+//    implementation 'org.hamcrest:hamcrest:2.2'
+//    implementation 'org.testng:testng:7.7.0'
+
+    testImplementation 'junit:junit:4.13.1'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    testImplementation group: 'io.rest-assured', name: 'rest-assured', version: '5.3.0'
+
+    runtimeOnly 'org.postgresql:postgresql'
+
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor "org.projectlombok:lombok-mapstruct-binding:0.2.0"
     annotationProcessor "org.projectlombok:lombok:${projectLombokVersion}"
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
 // Можно структурировать ещё
+
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+tasks.names
