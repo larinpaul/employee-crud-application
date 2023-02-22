@@ -6,11 +6,9 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import net.bytebuddy.asm.Advice;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,7 +17,6 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
