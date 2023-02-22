@@ -103,7 +103,7 @@ public class EmployeeControllerTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract().response();
         // TODO Remove log from lombok Checking Why Lombok is not Connected
-        log.info("response = " + res.asString()); // Как импортировать лог Ломбок?
+//        log.info("response = " + res.asString()); // Как импортировать лог Ломбок?
         System.out.println("response = " + res.asString());
     }
 
@@ -121,7 +121,7 @@ public class EmployeeControllerTest {
                 .then()
                 .assertThat().statusCode(HttpStatus.OK.value())
                 .body("firstName", equalTo("Newuser"))
-                .body("lastName", equalTo("Newfamily"))
+                .body("lastName", equalTo("Newfamily"));
     }
 
 }
