@@ -1,6 +1,7 @@
 package com.example.employeecrudapplication.service;
 
 import com.example.employeecrudapplication.data.repository.EmployeeRepository;
+import com.example.employeecrudapplication.exception.EmployeeValidationException;
 import com.example.employeecrudapplication.mapper.EmployeeMapperImpl;
 import com.example.employeecrudapplication.model.domain.Employee;
 import com.example.employeecrudapplication.model.dto.EmployeeDto;
@@ -68,10 +69,89 @@ class EmployeeServiceImplTest {
     // CREATE UNHAPPY CASES FOR CREATE
     // Смотрим на метод, и ищем все опасные моменты
     //
+    @Test
+    @DisplayName("Testing create with invalid email")
+    void testCreateWithInvalidEmail() {
+        // Given
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setFirstName("Tester");
+        employeeDto.setLastName("Testily");
+        employeeDto.setEmail("tester.testily@mail..com"); // Invalid email address
+
+        // Set up mock behavior
+        doThrow(new EmployeeValidationException("Invalid email address: " + employeeDto.getEmail()))
+                .when(employeeValidator).validToCreate(employeeDto);
+
+        // When
+        Throwable exception = assertThrows(EmployeeValidationException.class, () -> employeeService.create(employeeDto));
+
+        // Then
+        verify(employeeRepository, never()).save(any());
+        assertEquals("Invalid email address: tester.testily@mail..com", exception.getMessage());
+    }
+
+
+
+
 //    @Test
-//    @DisplayName("Testing create if invalid id")
-//    void testCreateInvalidEmail {
+//    @DisplayName("Testing create if email already exists")
+//    void testCreateWhenEmailAlreadyExists() {
+//        // Given
+//        EmployeeDto employeeDto = new EmployeeDto();
+//        employeeDto.setFirstName("Tester");
+//        employeeDto.setLastName("Testily");
+//        employeeDto.setEmail("tester.testily@mail.com");
 //
+//        Employee existingEmployee = new Employee();
+//        existingEmployee.setFirstName("Nottester");
+//        existingEmployee.setLastName("Nottestily");
+//        existingEmployee.setEmail("tester.testily@mail.com");
+//
+//        Mockito.when(employeeRepository.findByEmail(anyString())).thenReturn(Optional.of.(existingEmployee));
+//
+//        // When
+//        Throwable exception = assertThrows(EmployeeAlreadyExistsException.class, () -> employeeService.create(employeeDto));
+//
+//        // Then
+//        verify(employeeRepository, never()).save(any());
+//        assertEquals("Employee with theemail 'tester.testily@mail.com already exists", exception.getMessage());
+//
+//    }
+
+
+
+
+
+
+//    @Test
+//    @DisplayName("Testing create if invalid Email")
+//    void testCreateInvalidEmail() {
+//        // Given
+//        Employee sampleEmployee = new Employee();
+//        sampleEmployee.setFirstName("Tester");
+//        sampleEmployee.setLastName("Testily");
+//        sampleEmployee.setEmail("tester.testily@mail..com");
+//
+//        Employee expected = new Employee();
+//        expected.setFirstName("Tester");
+//        expected.setLastName("Testily");
+//        expected.setEmail("tester.testily@mail.com");
+//        expected.setId(1L);
+//
+//        // Стаб - это переопредление поведения какого-либо метода
+//        Mockito.when(employeeRepository.save(any())).thenReturn(expected);
+//
+//        EmployeeDto employeeDto = new EmployeeDto();
+//        employeeDto.setFirstName("Tester");
+//        employeeDto.setLastName("Testily");
+//        employeeDto.setEmail("tester.testily@mail.com");
+//
+//        // When (calling a tested method or something else, the "lab rabbit")
+//        Long actual = employeeService.create(employeeDto);
+//
+//        // Then
+//        verify(employeeRepository, times(1)).save(sampleEmployee);
+//        assertEquals(expected.getId(), actual);
 //    }
 
 
@@ -148,9 +228,63 @@ class EmployeeServiceImplTest {
 //            assertEquals(employeeDtoList.get(i).getLastName(), actual.get(i).getLastName());
 //            assertEquals(employeeDtoList.get(i).getEmail(), actual.get(i).getEmail());
 //        });
+    }
 
+    @Test
+    @DisplayName("Testing update with invalid email")
+    void testUpdateWithInvalidEmail() {
+        // Given
+        Long employeeId = 1L;
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setFirstName("Tester");
+        employeeDto.setLastName("Testily");
+        employeeDto.setEmail("tester.testily@mail..com");
+
+        Employee employee = new Employee();
+        employee.setId(employeeId);
+        employee.setFirstName("Old First Name");
+        employee.setLastName("Old Last Name");
+        employee.setEmail("oldemail@mail.com");
+
+        // Set up mock behavior
+        doThrow(new EmployeeValidationException("Invalid email address: " + employeeDto.getEmail()))
+                .when(employeeValidator).validToUpdate(employeeDto);
+
+        when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
+
+        // When
+        Throwable exception = assertThrows(EmployeeValidationException.class,
+                () -> employeeService.update(employeeId, employeeDto));
+
+        // Then
+        verify(employeeRepository, never()).save(any()); // This checks that the `save` method
+        // of the `employeeRepository` mock object is never called during the execution
+        // of the `employeeService.create(employeeDto)` method when an invalid email is provided.
+
+        assertEquals("Invalid email address: tester.testily@mail..com", exception.getMessage());
+        assertEquals("Old First Name", employee.getFirstName());
+        assertEquals("Old Last Name", employee.getLastName());
+        assertEquals("oldemail@mail.com", employee.getEmail());
 
     }
 
+    @Test
+    @DisplayName("Testing delete by Id")
+    void testDeleteById() {
+        // Given
+        Long employeeId = 1L;
+
+        // Stub the repository method
+        doNothing().when(employeeRepository).deleteById(employeeId);
+
+        // When
+        // Call the service method
+        employeeService.delete(employeeId);
+
+        // Then
+        // Verify that the repository method was called once
+        verify(employeeRepository, times(1)).deleteById(employeeId);
+
+    }
 
 }
