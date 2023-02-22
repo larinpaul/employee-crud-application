@@ -91,8 +91,6 @@ class EmployeeServiceImplTest {
     }
 
 
-
-
 //    @Test
 //    @DisplayName("Testing create if email already exists")
 //    void testCreateWhenEmailAlreadyExists() {
@@ -117,10 +115,6 @@ class EmployeeServiceImplTest {
 //        assertEquals("Employee with theemail 'tester.testily@mail.com already exists", exception.getMessage());
 //
 //    }
-
-
-
-
 
 
 //    @Test
@@ -196,7 +190,7 @@ class EmployeeServiceImplTest {
 
         List<Employee> employeeList = List.of(employeeTester, employeeTester2, employeeTester23);
         List<EmployeeDto> employeeDtoList = employeeList.stream()
-                .map(employeeMapper::toDto).collect(Collectors.toList());
+                .map(employeeMapper::toDto).toList();
 
 //        Mockito.when(employeeRepository.findAll())
 //                .thenReturn(List.of(employeeTester, employeeTester2, employeeTester23));
@@ -212,13 +206,13 @@ class EmployeeServiceImplTest {
             assertEquals(employeeDtoList.get(i).getEmail(), actual.get(i).getEmail());
         }
 
-        int i = 0; // The so-called "enhanced loop", aka for-each loop
-        for (EmployeeDto expectedDto : employeeDtoList) {
-            EmployeeDto actualDto = actual.get(i++);
-            assertEquals(expectedDto.getFirstName(), actualDto.getFirstName());
-            assertEquals(expectedDto.getLastName(), actualDto.getLastName());
-            assertEquals(expectedDto.getEmail(), actualDto.getEmail());
-        }
+//        int i = 0; // The so-called "enhanced loop", aka for-each loop
+//        for (EmployeeDto expectedDto : employeeDtoList) {
+//            EmployeeDto actualDto = actual.get(i++);
+//            assertEquals(expectedDto.getFirstName(), actualDto.getFirstName());
+//            assertEquals(expectedDto.getLastName(), actualDto.getLastName());
+//            assertEquals(expectedDto.getEmail(), actualDto.getEmail());
+//        }
 
         // Let's try to use a method reference in a lambda expression to simplify the loop
         /// To be honest, though, I don't see any "method references" here
