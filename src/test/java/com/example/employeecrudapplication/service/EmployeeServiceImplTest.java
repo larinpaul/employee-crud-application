@@ -6,20 +6,20 @@ import com.example.employeecrudapplication.mapper.EmployeeMapperImpl;
 import com.example.employeecrudapplication.model.domain.Employee;
 import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import com.example.employeecrudapplication.validator.EmployeeValidator;
-import org.assertj.core.api.JUnitSoftAssertions;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 
