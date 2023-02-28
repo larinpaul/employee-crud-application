@@ -15,7 +15,7 @@ public class EmployeeController {
     // final и аннотация RequiredArgsConstructor позволяют заинжектить без @Autowired
     private final EmployeeService employeeService;
 
-    // Get employees
+    // Get all employees
     @GetMapping
     public List<EmployeeDto> getAllEmployees() {
         return employeeService.findAll();
