@@ -1,7 +1,7 @@
 package com.example.employeecrudapplication.controller;
 
+import com.example.employeecrudapplication.AbstractDbTest;
 import com.example.employeecrudapplication.model.dto.EmployeeDto;
-import groovy.util.logging.Slf4j;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.JsonPath;
@@ -10,7 +10,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -22,18 +21,17 @@ import static org.hamcrest.Matchers.*;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class EmployeeControllerTest {
+public class EmployeeControllerTest extends AbstractDbTest {
 
     @LocalServerPort
     private int port;
-    // Нужно сделать чтобы он был рандомный
+
     private final String BASE_PATH = "/api/v1/employees";  // Path to endpoint is always string
 
     @Test
     public void testGetAllEmployees() {
         List<EmployeeDto> list = given()
                 .port(port)
-                // . baseUri("http://localhost:8080") // После given прокидываем port
                 .when()
                 .get(BASE_PATH) // Путь к эндпоинту
                 .then()
@@ -44,33 +42,32 @@ public class EmployeeControllerTest {
                 .body()
                 .as(new TypeRef<>() {
                 }); // Возвращает результат с Эндпоинта, и мы сможем проверить что вернул Эндпоинт
+        // You may want to add additional assertions to test the actual data returned by the endpoint
     }
 
     @Test
     public void testEmployeesResponseBody() {
         given()
-                .baseUri("http://localhost:8080")
                 .when()
                 .get(BASE_PATH)
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.OK.value())
-                .body("id", hasItems(1, 2),
+                .body("id", hasItems(1L, 2L),
                         // TODO
                         "firstName", hasItems("User-1", "User-2"),
                         "lastName", hasItems("Admin", "Supervisor"),
-                        "id[0]", equalTo(1),
+                        "id[0]", equalTo(1L),
                         "firstName[0]", is(equalTo("User-1")),
-                        "size()", equalTo(2)
+                        "size()", equalTo(2L)
                 );
     }
 
     @Test
     public void testGetEmployeeWithParam() {
         Response empResponse = given()
-                .baseUri("http://localhost:8080")
                 .contentType(ContentType.JSON)
-                .pathParam("id", "1")
+//                .pathParam("id", "1") // Удалю эту строку, потому что она дублирует функционал .get()
                 .when()
                 .get(BASE_PATH + "/{id}", "1")
                 // Когда хочешь проверить получение сущности по айди, и
@@ -92,15 +89,12 @@ public class EmployeeControllerTest {
     @Test
     public void extractGetEmployeeResponse() {
         Response res = given()
-                .baseUri("http;//localhost:8080")
                 .when()
-                .get("/employees")
+                .get(BASE_PATH)
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.OK.value())
                 .extract().response();
-        // TODO Remove log from lombok Checking Why Lombok is not Connected
-//        log.info("response = " + res.asString()); // Как импортировать лог Ломбок?
         System.out.println("response = " + res.asString());
     }
 
@@ -114,7 +108,8 @@ public class EmployeeControllerTest {
                 .contentType(ContentType.JSON)
                 .body(empParams.toString())
                 .when()
-                .post("http://localhost:8080/employee")
+                .post(BASE_PATH)
+//                .post("http://localhost:8080/employee")
                 .then()
                 .assertThat().statusCode(HttpStatus.OK.value())
                 .body("firstName", equalTo("Newuser"))
