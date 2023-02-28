@@ -19,7 +19,6 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
-
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class EmployeeControllerTest extends AbstractDbTest {
 
@@ -42,7 +41,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .body()
                 .as(new TypeRef<>() {
                 }); // Возвращает результат с Эндпоинта, и мы сможем проверить что вернул Эндпоинт
-        // You may want to add additional assertions to test the actual data returned by the endpoint
     }
 
     @Test
@@ -87,16 +85,64 @@ public class EmployeeControllerTest extends AbstractDbTest {
     }
 
     @Test
-    public void extractGetEmployeeResponse() {
+    public void extractGetEmployeeResponse1() {
         Response res = given()
+                .port(port)
                 .when()
                 .get(BASE_PATH)
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.OK.value())
-                .extract().response();
+                .and()
+                .extract()
+//                .response()
+                .body()
+                .as(new TypeRef<>() {
+                });
         System.out.println("response = " + res.asString());
     }
+
+    @Test
+    public void extractGetEmployeesResponse2() {
+        Response res = given().
+                // baseUri("http://localhost:8080").
+                        when().
+                get("/employees").
+                then().
+                log().all().
+                assertThat().
+                statusCode(200).
+                extract().
+                response();
+        System.out.println("response = " + res.asString());
+    }
+
+
+
+//    @Test
+//    public void testGetAllEmployees() {
+//        List<EmployeeDto> list = given()
+//                .port(port)
+//                .when()
+//                .get(BASE_PATH) // Путь к эндпоинту
+//                .then()
+//                .assertThat()
+//                .statusCode(HttpStatus.OK.value())
+//                .and()
+//                .extract()
+//                .body()
+//                .as(new TypeRef<>() {
+//                }); // Возвращает результат с Эндпоинта, и мы сможем проверить что вернул Эндпоинт
+//    }
+
+
+
+
+
+
+
+
+
 
     @Test
     public void testPostEmployee() throws JSONException {
