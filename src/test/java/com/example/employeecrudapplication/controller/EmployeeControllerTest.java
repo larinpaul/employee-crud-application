@@ -14,12 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 import java.util.List;
 import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -54,7 +56,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
 //        given()
 //                .when()
 //                .get(BASE_PATH)
-//                .then()
+//                 .then()
 //                .assertThat()
 //                .statusCode(HttpStatus.OK.value())
 //                .body("id", hasItems(1L, 2L),
@@ -192,20 +194,34 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .body()
                 .as(EmployeeDto.class);
 
+        // Check if the returned employee matches the expected one
         assertNotNull(actual);
-
-        assertEquals(expected.getFirstName(), actual.getFirstName());
-        assertEquals(expected.getLastName(), actual.getLastName());
-        assertEquals(expected.getEmail(), actual.getEmail());
-
-        assertThat(actual.getEmail(), is(equalTo(expected.getEmail())));
-
-        assertThat(actual.getFirstName(), is(equalTo(expected.getFirstName())));
-
         assertThat(actual).usingRecursiveComparison()
                 .isEqualTo(expected);
     }
 
+    @Test
+    void testDeleteEmployeeById() {
+        // Create an employee in the DB
+        Employee employee = new Employee();
+        employee.setFirstName("Newuser1");
+        employee.setLastName("Newfamily1");
+        employee.setEmail("Newuser1@mail.com");
+        Long employeeId = employeeRepository.save(employee).getId();
+
+        // Delete the employee by Id
+        given()
+                .port(port)
+                .when()
+                .delete(BASE_PATH + "/" + employeeId)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value());
+
+        // Verify that the employee has been deleted
+        boolean byId = employeeRepository.existsById(employeeId);
+        assertFalse(byId);
+    }
 
 
 
@@ -329,6 +345,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
         assertEquals(updatedEmployeeDto.getEmail(), updatedEmployee.getEmail());
 
     }
+
 
     @AfterEach
     void clearDbData() {
