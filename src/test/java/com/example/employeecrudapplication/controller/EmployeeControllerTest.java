@@ -6,7 +6,6 @@ import com.example.employeecrudapplication.model.domain.Employee;
 import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
