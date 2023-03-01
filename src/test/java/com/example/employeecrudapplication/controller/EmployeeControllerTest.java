@@ -90,13 +90,13 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .assertThat()
                 .statusCode(HttpStatus.OK.value())
                 .body("id", hasItems(1L, 2L),
-                    "name", hasItems("Newuser1", "Newuser2"),
-                    "lastName", hasItems("Newfamily2", "Newfamily2"),
-                    "id[0]", equalTo(1L),
-                    "id[1]", equalTo(2L),
-                    "lastName[0]", is(equalTo("Newuser1")),
-                    "lastName[1]", is(equalTo("Newuser2")),
-                    "size()", equalTo(2)
+                        "name", hasItems("Newuser1", "Newuser2"),
+                        "lastName", hasItems("Newfamily2", "Newfamily2"),
+                        "id[0]", equalTo(1L),
+                        "id[1]", equalTo(2L),
+                        "lastName[0]", is(equalTo("Newuser1")),
+                        "lastName[1]", is(equalTo("Newuser2")),
+                        "size()", equalTo(2)
                 );
     }
 
@@ -237,7 +237,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
         assertEquals(employeeDto.getFirstName(), employee.getFirstName());
         assertEquals(employeeDto.getLastName(), employee.getLastName());
         assertEquals(employeeDto.getEmail(), employee.getEmail());
-                    // expected                 // actual
+        // expected                 // actual
 
     }
 
@@ -261,19 +261,19 @@ public class EmployeeControllerTest extends AbstractDbTest {
 
         // Verify the status code
         Long actual =
-            given()
-                .port(port)
-                .contentType(ContentType.JSON)
-                .body(updatedEmployeeDto)
-                .when()
-                .put(BASE_PATH + "/" + employeeId)
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.OK.value())
-            .and()
-                .extract()
-                .body()
-                .as((Type) EmployeeDto.class);
+                given()
+                        .port(port)
+                        .contentType(ContentType.JSON)
+                        .body(updatedEmployeeDto)
+                        .when()
+                        .put(BASE_PATH + "/" + employeeId)
+                        .then()
+                        .assertThat()
+                        .statusCode(HttpStatus.OK.value())
+                        .and()
+                        .extract()
+                        .body()
+                        .as((Type) EmployeeDto.class);
 
         assertNotNull(actual);
 
