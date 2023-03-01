@@ -4,25 +4,18 @@ import com.example.employeecrudapplication.AbstractDbTest;
 import com.example.employeecrudapplication.data.repository.EmployeeRepository;
 import com.example.employeecrudapplication.model.domain.Employee;
 import com.example.employeecrudapplication.model.dto.EmployeeDto;
-import com.example.employeecrudapplication.service.EmployeeService;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.Response;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
@@ -211,9 +204,9 @@ public class EmployeeControllerTest extends AbstractDbTest {
 
         assertThat(actual.getFirstName(), is(equalTo(expected.getFirstName())));
 
-        assertThat(actual).usingRecursiveComparison()
+        AssertionsForClassTypes.assertThat(actual).usingRecursiveComparison()
                 .ignoringFields("id")
-                .isEqualTo(actual/*expected*/);
+                .isEqualTo(expected);
     }
 
 
