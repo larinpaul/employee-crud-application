@@ -25,12 +25,7 @@ public class AbstractDbTest {
             new PostgreSQLContainer<>("postgres:13.1-alpine")
                     .withDatabaseName("employees")
                     .withUsername("postgres")
-                    .withPassword("postgres")
-                    .withStartupTimeout(Duration.ofSeconds(30)) // Wait up to 30 seconds for a container to start
-                    .waitingFor(Wait.forLogMessage
-                            (".*database system is ready to accept connections.*\\n", 1)
-                    );
-
+                    .withPassword("postgres");
 
     static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
