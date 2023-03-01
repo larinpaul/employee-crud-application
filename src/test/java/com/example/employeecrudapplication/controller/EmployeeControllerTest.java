@@ -249,8 +249,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
         employeeDto.setLastName("Newfamily");;
         employeeDto.setEmail("Newuser@mail.com");
         Employee employee = new Employee();
-//        Employee savedEmployee = employeeRepository.save(employee);
-//        Long employeeId = savedEmployee.getId();
         Long employeeId = employeeRepository.save(employee).getId();
 
         // Update the employee
@@ -259,8 +257,8 @@ public class EmployeeControllerTest extends AbstractDbTest {
         updatedEmployeeDto.setLastName("Updatedfamily");
         updatedEmployeeDto.setEmail("Updateduser@mail.com");
 
-        // Verify the status code
-        Long actual =
+        // Verify the status code and extract the body
+        EmployeeDto actual =
                 given()
                         .port(port)
                         .contentType(ContentType.JSON)
@@ -273,12 +271,10 @@ public class EmployeeControllerTest extends AbstractDbTest {
                         .and()
                         .extract()
                         .body()
-                        .as((Type) EmployeeDto.class);
+                        .as(EmployeeDto.class);
 
         assertNotNull(actual);
-
-        Optional<Employee> byId = employeeRepository.findById(actual);
-
+        Optional<Employee> byId = employeeRepository.findById(employeeId);
         assertFalse(byId.isEmpty());
 
         Employee updatedEmployee = byId.get();
