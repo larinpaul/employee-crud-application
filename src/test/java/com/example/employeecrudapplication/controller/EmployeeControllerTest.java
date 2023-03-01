@@ -20,8 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -204,8 +203,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
 
         assertThat(actual.getFirstName(), is(equalTo(expected.getFirstName())));
 
-        AssertionsForClassTypes.assertThat(actual).usingRecursiveComparison()
-                .ignoringFields("id")
+        assertThat(actual).usingRecursiveComparison()
                 .isEqualTo(expected);
     }
 
