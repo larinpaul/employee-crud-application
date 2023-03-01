@@ -163,9 +163,9 @@ class EmployeeServiceImplTest {
 
         EmployeeDto actual = employeeService.findById(employeeId);
 
-        assertEquals(actual.getFirstName(), "Tester");
-        assertEquals(actual.getLastName(), "Testily");
-        assertEquals(actual.getEmail(), "tester.testily@mail.com");
+        assertEquals("Tester", actual.getFirstName());
+        assertEquals("Testily", actual.getLastName());
+        assertEquals("tester.testily@mail.com", actual.getEmail());
 
     }
 

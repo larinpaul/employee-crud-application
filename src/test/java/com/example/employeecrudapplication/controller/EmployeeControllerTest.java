@@ -19,12 +19,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -141,7 +144,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
     }
 
 
-   /* @Test
+   /*@Test
     void getEmployeeById() {
         Employee employee = new Employee();
         Employee employee = new Employee();
@@ -166,8 +169,56 @@ public class EmployeeControllerTest extends AbstractDbTest {
 
         // А потом вытаскивать через Эндпоинт
 
+    }*/
+
+    @Test
+    void testGetEmployee() {
+        // Create an employee in the DB
+        Employee employee = new Employee();
+        employee.setFirstName("Newuser1");
+        employee.setLastName("Newfamily1");
+        employee.setEmail("Newuser@mail.com");
+        Long employeeId = employeeRepository.save(employee).getId();
+
+        // Create an expected employee
+        EmployeeDto expected = new EmployeeDto();
+        expected.setFirstName("Newuser1");
+        expected.setLastName("Newfamily1");
+        expected.setEmail("Newuser@mail.com");
+
+        // Validate status code and extract the body of the request
+        EmployeeDto actual = given()
+                .port(port)
+                .contentType(ContentType.JSON)
+                .when()
+                .get(BASE_PATH + "/" + employeeId)
+                .then()
+                .log().all()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .extract()
+                .body()
+                .as(EmployeeDto.class);
+
+        assertNotNull(actual);
+
+        assertEquals(expected.getFirstName(), actual.getFirstName());
+        assertEquals(expected.getLastName(), actual.getLastName());
+        assertEquals(expected.getEmail(), actual.getEmail());
+
+        assertThat(actual.getEmail(), is(equalTo(expected.getEmail())));
+
+        assertThat(actual.getFirstName(), is(equalTo(expected.getFirstName())));
+
+        assertThat(actual).usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(actual/*expected*/);
     }
-*/
+
+
+
+
 
     /*@Test
     void extractGetEmployeeResponse1() { // логика тут не совпадает с названием...
@@ -246,7 +297,8 @@ public class EmployeeControllerTest extends AbstractDbTest {
         // Create an employee
         EmployeeDto employeeDto = new EmployeeDto();
         employeeDto.setFirstName("Newuser");
-        employeeDto.setLastName("Newfamily");;
+        employeeDto.setLastName("Newfamily");
+        ;
         employeeDto.setEmail("Newuser@mail.com");
         Employee employee = new Employee();
         Long employeeId = employeeRepository.save(employee).getId();
@@ -274,7 +326,9 @@ public class EmployeeControllerTest extends AbstractDbTest {
                         .as(EmployeeDto.class);
 
         assertNotNull(actual);
+
         Optional<Employee> byId = employeeRepository.findById(employeeId);
+
         assertFalse(byId.isEmpty());
 
         Employee updatedEmployee = byId.get();
