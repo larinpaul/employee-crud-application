@@ -6,6 +6,7 @@ import com.example.employeecrudapplication.model.domain.Employee;
 import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import org.apache.coyote.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
@@ -36,7 +37,26 @@ public class EmployeeControllerTest extends AbstractDbTest {
     private final String BASE_PATH = "/api/v1/employees";  // Path to endpoint is always string
 
     @Test
-    void testGetAllEmployees() {
+    void testGetAllEmployeesEmptyList() {
+        List<EmployeeDto> list = given()
+                .port(port)
+                .when()
+                .get(BASE_PATH)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .extract()
+                .body()
+                .as(new TypeRef<>() {});
+
+        // Assert that the list is returned by the API and is empty
+        assertNotNull(list);
+        assertEquals(0, list.size());
+    }
+
+    @Test
+    void testGetAllEmployeesUnhappy() {
         List<EmployeeDto> list = given()
                 .port(port)
                 .when()
@@ -49,6 +69,30 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .body()
                 .as(new TypeRef<>() {
                 }); // Возвращает результат с Эндпоинта, и мы сможем проверить что вернул Эндпоинт
+    }
+
+    @Test
+    void testGetEmployeeByIdNotFound() {
+        // Given
+        Long employeeId = 9100100100L;
+
+        // When
+        Response response = given()
+                .port(port)
+                .when()
+                .get(BASE_PATH + "/" + employeeId)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .and()
+                .extract()
+                .response()
+                .as(new TypeRef<>() {
+                });
+
+        // Then
+        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode());
+
     }
 
 //    @Test
@@ -69,7 +113,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
 //                );
 //    }
 
-    @Test
+    @Test // TODO
     void testEmployeesResponseBody() throws JSONException {
         JSONObject employeeParams = new JSONObject();
         employeeParams.put("firstName", "Newuser1");
@@ -186,7 +230,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .when()
                 .get(BASE_PATH + "/" + employeeId)
                 .then()
-                .log().all()
                 .assertThat()
                 .statusCode(HttpStatus.OK.value())
                 .and()

@@ -6,6 +6,7 @@ import com.example.employeecrudapplication.mapper.EmployeeMapperImpl;
 import com.example.employeecrudapplication.model.domain.Employee;
 import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import com.example.employeecrudapplication.validator.EmployeeValidator;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -17,8 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
@@ -65,9 +65,6 @@ class EmployeeServiceImplTest {
         assertEquals(expected.getId(), actual);
     }
 
-    // CREATE UNHAPPY CASES FOR CREATE
-    // Смотрим на метод, и ищем все опасные моменты
-    //
     @Test
     @DisplayName("Testing create with invalid email")
     void testCreateWithInvalidEmail() {
@@ -224,7 +221,80 @@ class EmployeeServiceImplTest {
     }
 
     @Test
-    @DisplayName("Testing update with invalid email")
+    @DisplayName("Testing not throwing an exception with a valid email")
+    void testUpdateWithValidEmailNotThrowing() {
+        // Given
+        Long employeeId = 1L;
+        Employee employee = new Employee();
+        employee.setId(employeeId);
+        employee.setFirstName("Oldname");
+        employee.setLastName("Oldlastname");
+        employee.setEmail("oldemail@mail.com");
+
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setFirstName("Newname");
+        employeeDto.setLastName("Newlastname");
+        employeeDto.setEmail("newemail@mail.com");
+
+        Employee updatedEmployee = new Employee();
+        updatedEmployee.setId(employeeId);
+        updatedEmployee.setFirstName(employeeDto.getFirstName());
+        updatedEmployee.setLastName(employeeDto.getLastName());
+        updatedEmployee.setEmail(employeeDto.getEmail());
+
+        // Set up mock behavior
+        doNothing().when(employeeValidator).validToUpdate(employeeDto);
+        when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
+        when(employeeRepository.save(any(Employee.class))).thenReturn(updatedEmployee);
+
+        // When
+        assertDoesNotThrow(() -> employeeService.update(employeeId, employeeDto));
+
+        // Then
+        verify(employeeValidator).validToUpdate(employeeDto);
+    }
+
+    @Test
+    @DisplayName("Testing update with a valid email")
+    void testUpdateWithValidEmail() {
+        // Given
+        Long employeeId = 1L;
+        Employee employee = new Employee();
+        employee.setId(employeeId);
+        employee.setFirstName("Oldname");
+        employee.setLastName("Oldlastname");
+        employee.setEmail("oldemail@mail.com");
+
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setFirstName("Newname");
+        employeeDto.setLastName("Newlastname");
+        employeeDto.setEmail("newemail@mail.com");
+
+        Employee updatedEmployee = new Employee();
+        updatedEmployee.setId(employeeId);
+        updatedEmployee.setFirstName(employeeDto.getFirstName());
+        updatedEmployee.setLastName(employeeDto.getLastName());
+        updatedEmployee.setEmail(employeeDto.getEmail());
+
+        // Set up mock behavior
+        doNothing().when(employeeValidator).validToUpdate(employeeDto);
+        when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employee));
+        when(employeeRepository.save(any(Employee.class))).thenReturn(updatedEmployee);
+
+        // When
+        EmployeeDto result = employeeService.update(employeeId, employeeDto);
+
+        // Then
+        verify(employeeRepository).save(any(Employee.class));
+        assertNotNull(result);
+        assertEquals(employeeId, updatedEmployee.getId());
+        assertEquals(employeeDto.getFirstName(), result.getFirstName());
+        assertEquals(employeeDto.getLastName(), result.getLastName());
+        assertEquals(employeeDto.getEmail(), result.getEmail());
+    }
+
+    @Test
+    @DisplayName("Testing update with an invalid email")
     void testUpdateWithInvalidEmail() {
         // Given
         Long employeeId = 1L;
@@ -258,7 +328,6 @@ class EmployeeServiceImplTest {
         assertEquals("Old First Name", employee.getFirstName());
         assertEquals("Old Last Name", employee.getLastName());
         assertEquals("oldemail@mail.com", employee.getEmail());
-
     }
 
     @Test
