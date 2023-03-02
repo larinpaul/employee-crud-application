@@ -8,8 +8,6 @@ import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import jakarta.persistence.EntityNotFoundException;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +21,6 @@ import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -257,7 +254,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
         EmployeeDto employeeDto = new EmployeeDto();
         employeeDto.setFirstName("Newuser");
         employeeDto.setLastName("Newfamily");
-        ;
+
         employeeDto.setEmail("Newuser@mail.com");
         Employee employee = new Employee();
         Long employeeId = employeeRepository.save(employee).getId();
@@ -297,6 +294,36 @@ public class EmployeeControllerTest extends AbstractDbTest {
         assertEquals(updatedEmployeeDto.getLastName(), updatedEmployee.getLastName());
         assertEquals(updatedEmployeeDto.getEmail(), updatedEmployee.getEmail());
 
+    }
+
+    @Test
+    void testUpdateEmployeeNotFound() {
+        // Give
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setFirstName("Newuser");
+        employeeDto.setLastName("Newfamily");
+        employeeDto.setEmail("newuser@mail.com");
+        // Non-existent employee ID to be updated
+        Long employeeId = 9400400400L;
+
+        // Verify the status code and extract the body
+        EntityNotFoundException exception =
+                given()
+                        .port(port)
+                        .contentType(ContentType.JSON)
+                        .body(employeeDto)
+                        .when()
+                        .put(BASE_PATH + "/" + employeeId)
+                        .then()
+                        .assertThat()
+                        .statusCode(HttpStatus.NOT_FOUND.value())
+                        .and()
+                        .extract()
+                        .body()
+                        .as(EntityNotFoundException.class);
+
+        assertNotNull(exception);
+        assertEquals("Employee not found for this id :: " + employeeId, exception.getMessage());
     }
 
 
