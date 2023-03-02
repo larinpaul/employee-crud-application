@@ -2,6 +2,8 @@ package com.example.employeecrudapplication.controller;
 
 import com.example.employeecrudapplication.AbstractDbTest;
 import com.example.employeecrudapplication.data.repository.EmployeeRepository;
+import com.example.employeecrudapplication.exception.EmployeeValidationException;
+import com.example.employeecrudapplication.exception.ErrorResponse;
 import com.example.employeecrudapplication.model.domain.Employee;
 import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import io.restassured.common.mapper.TypeRef;
@@ -18,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -141,7 +144,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 );
     }
 
-
     /*@Test
     void testGetEmployeeWithParam() {
         Response empResponse = given()
@@ -180,7 +182,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .as(new TypeRef<>() {
                 });
     }
-
 
    /*@Test
     void getEmployeeById() {
@@ -267,9 +268,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
         assertFalse(byId);
     }
 
-
-
-
     /*@Test
     void extractGetEmployeeResponse1() { // логика тут не совпадает с названием...
         List<EmployeeDto> list = given()
@@ -338,6 +336,34 @@ public class EmployeeControllerTest extends AbstractDbTest {
         assertEquals(employeeDto.getFirstName(), employee.getFirstName());
         assertEquals(employeeDto.getLastName(), employee.getLastName());
         assertEquals(employeeDto.getEmail(), employee.getEmail());
+    }
+
+    @Test
+    void testPostEmployeeIncorrectEmail() {
+        // Given
+        EmployeeDto employeeDto = new EmployeeDto();
+        employeeDto.setFirstName("Newuser");
+        employeeDto.setLastName("Newfamily");
+        employeeDto.setEmail("invalidemail");
+
+        // When
+        ErrorResponse errorResponse = given()
+                .port(port)
+                .contentType(ContentType.JSON)
+                .body(employeeDto)
+                .when()
+                .post(BASE_PATH)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .and()
+                .extract()
+                .body()
+                .as(ErrorResponse.class);
+
+        // Then
+        assertNotNull(errorResponse);
+//        assertTrue(response.getBody().contains("Invalid email format")); // TODO
     }
 
     @Test

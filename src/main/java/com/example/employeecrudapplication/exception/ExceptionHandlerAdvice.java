@@ -1,8 +1,6 @@
 package com.example.employeecrudapplication.exception;
 
 import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -17,19 +15,10 @@ public class ExceptionHandlerAdvice {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
-    @Data
-    @AllArgsConstructor
-    private static class ErrorResponse {
-        private final String message;
-
-//        public ErrorResponse(String message) {
-//            this.message = message;
-//        }
-
-//        public String getMessage() {
-//            return message;
-//        }
-
+    @ExceptionHandler(EmployeeValidationException.class)
+    public ResponseEntity<Object> handleEmployeeValidationException(EmployeeValidationException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
 }
