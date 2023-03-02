@@ -6,6 +6,8 @@ import com.example.employeecrudapplication.model.domain.Employee;
 import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
+import io.restassured.response.ResponseBody;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -15,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -74,11 +78,13 @@ public class EmployeeControllerTest extends AbstractDbTest {
     @Test
     void testGetEmployeeByIdNotFound() {
         // Given
-        Long employeeId = 9100100100L;
+        Long employeeId = 9400400400L;
 
         // When
-        Response response = given()
+        EntityNotFoundException exception = given()
                 .port(port)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .get(BASE_PATH + "/" + employeeId)
                 .then()
@@ -86,13 +92,8 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .and()
                 .extract()
-                .response()
-                .as(new TypeRef<>() {
-                });
-
-        // Then
-        assertEquals(HttpStatus.NOT_FOUND.value(), response.getStatusCode());
-
+                .body()
+                .as(EntityNotFoundException.class);
     }
 
 //    @Test
@@ -337,8 +338,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
         assertEquals(employeeDto.getFirstName(), employee.getFirstName());
         assertEquals(employeeDto.getLastName(), employee.getLastName());
         assertEquals(employeeDto.getEmail(), employee.getEmail());
-        // expected                 // actual
-
     }
 
     @Test
