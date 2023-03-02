@@ -7,6 +7,7 @@ import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import com.example.employeecrudapplication.validator.EmployeeValidator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -71,4 +72,5 @@ public class EmployeeServiceImpl implements EmployeeService {
     public void delete(Long employeeId) {
         employeeRepository.deleteById(employeeId);
     }
+
 }
