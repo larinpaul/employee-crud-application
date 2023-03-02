@@ -6,7 +6,6 @@ import com.example.employeecrudapplication.mapper.EmployeeMapperImpl;
 import com.example.employeecrudapplication.model.domain.Employee;
 import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import com.example.employeecrudapplication.validator.EmployeeValidator;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,8 +24,8 @@ import static org.mockito.Mockito.*;
 @SpringJUnitConfig
 class EmployeeServiceImplTest {
 
-    @InjectMocks // Данная аннотация указывает на то, что все аннотации будут заинжекчены сюда
-    private EmployeeServiceImpl employeeService; // Это реальный объект, который мы будем тестировать
+    @InjectMocks
+    private EmployeeServiceImpl employeeService;
     @Mock
     private EmployeeRepository employeeRepository;
     @Mock
@@ -49,7 +48,6 @@ class EmployeeServiceImplTest {
         expected.setEmail("tester.testily@mail.com");
         expected.setId(1L);
 
-        // Стаб - это переопредление поведения какого-либо метода
         Mockito.when(employeeRepository.save(any())).thenReturn(expected);
 
         EmployeeDto employeeDto = new EmployeeDto();
@@ -57,7 +55,7 @@ class EmployeeServiceImplTest {
         employeeDto.setLastName("Testily");
         employeeDto.setEmail("tester.testily@mail.com");
 
-        // When (calling a tested method or something else, the "lab rabbit")
+        // When
         Long actual = employeeService.create(employeeDto);
 
         // Then
@@ -85,65 +83,6 @@ class EmployeeServiceImplTest {
         verify(employeeRepository, never()).save(any());
         assertEquals("Invalid email address: tester.testily@mail..com", exception.getMessage());
     }
-
-
-//    @Test
-//    @DisplayName("Testing create if email already exists")
-//    void testCreateWhenEmailAlreadyExists() {
-//        // Given
-//        EmployeeDto employeeDto = new EmployeeDto();
-//        employeeDto.setFirstName("Tester");
-//        employeeDto.setLastName("Testily");
-//        employeeDto.setEmail("tester.testily@mail.com");
-//
-//        Employee existingEmployee = new Employee();
-//        existingEmployee.setFirstName("Nottester");
-//        existingEmployee.setLastName("Nottestily");
-//        existingEmployee.setEmail("tester.testily@mail.com");
-//
-//        Mockito.when(employeeRepository.findByEmail(anyString())).thenReturn(Optional.of.(existingEmployee));
-//
-//        // When
-//        Throwable exception = assertThrows(EmployeeAlreadyExistsException.class, () -> employeeService.create(employeeDto));
-//
-//        // Then
-//        verify(employeeRepository, never()).save(any());
-//        assertEquals("Employee with theemail 'tester.testily@mail.com already exists", exception.getMessage());
-//
-//    }
-
-
-//    @Test
-//    @DisplayName("Testing create if invalid Email")
-//    void testCreateInvalidEmail() {
-//        // Given
-//        Employee sampleEmployee = new Employee();
-//        sampleEmployee.setFirstName("Tester");
-//        sampleEmployee.setLastName("Testily");
-//        sampleEmployee.setEmail("tester.testily@mail..com");
-//
-//        Employee expected = new Employee();
-//        expected.setFirstName("Tester");
-//        expected.setLastName("Testily");
-//        expected.setEmail("tester.testily@mail.com");
-//        expected.setId(1L);
-//
-//        // Стаб - это переопредление поведения какого-либо метода
-//        Mockito.when(employeeRepository.save(any())).thenReturn(expected);
-//
-//        EmployeeDto employeeDto = new EmployeeDto();
-//        employeeDto.setFirstName("Tester");
-//        employeeDto.setLastName("Testily");
-//        employeeDto.setEmail("tester.testily@mail.com");
-//
-//        // When (calling a tested method or something else, the "lab rabbit")
-//        Long actual = employeeService.create(employeeDto);
-//
-//        // Then
-//        verify(employeeRepository, times(1)).save(sampleEmployee);
-//        assertEquals(expected.getId(), actual);
-//    }
-
 
     @Test
     @DisplayName("Testing find by Id")
@@ -188,9 +127,6 @@ class EmployeeServiceImplTest {
         List<EmployeeDto> employeeDtoList = employeeList.stream()
                 .map(employeeMapper::toDto).toList();
 
-//        Mockito.when(employeeRepository.findAll())
-//                .thenReturn(List.of(employeeTester, employeeTester2, employeeTester23));
-
         Mockito.when(employeeRepository.findAll()).thenReturn(employeeList);
         List<EmployeeDto> actual = employeeService.findAll();
 
@@ -201,23 +137,6 @@ class EmployeeServiceImplTest {
             assertEquals(employeeDtoList.get(i).getLastName(), actual.get(i).getLastName());
             assertEquals(employeeDtoList.get(i).getEmail(), actual.get(i).getEmail());
         }
-
-//        int i = 0; // The so-called "enhanced loop", aka for-each loop
-//        for (EmployeeDto expectedDto : employeeDtoList) {
-//            EmployeeDto actualDto = actual.get(i++);
-//            assertEquals(expectedDto.getFirstName(), actualDto.getFirstName());
-//            assertEquals(expectedDto.getLastName(), actualDto.getLastName());
-//            assertEquals(expectedDto.getEmail(), actualDto.getEmail());
-//        }
-
-        // Let's try to use a method reference in a lambda expression to simplify the loop
-        /// To be honest, though, I don't see any "method references" here
-        /// Maybe I just don't understand what a method reference is, I thought it was ::
-//        IntStream.range(0, employeeDtoList.size()).forEach(i -> {
-//            assertEquals(employeeDtoList.get(i).getFirstName(), actual.get(i).getFirstName());
-//            assertEquals(employeeDtoList.get(i).getLastName(), actual.get(i).getLastName());
-//            assertEquals(employeeDtoList.get(i).getEmail(), actual.get(i).getEmail());
-//        });
     }
 
     @Test
@@ -320,9 +239,7 @@ class EmployeeServiceImplTest {
                 () -> employeeService.update(employeeId, employeeDto));
 
         // Then
-        verify(employeeRepository, never()).save(any()); // This checks that the `save` method
-        // of the `employeeRepository` mock object is never called during the execution
-        // of the `employeeService.create(employeeDto)` method when an invalid email is provided.
+        verify(employeeRepository, never()).save(any());
 
         assertEquals("Invalid email address: tester.testily@mail..com", exception.getMessage());
         assertEquals("Old First Name", employee.getFirstName());

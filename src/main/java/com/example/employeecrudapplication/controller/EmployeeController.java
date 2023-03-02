@@ -12,28 +12,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class EmployeeController {
 
-    // final и аннотация RequiredArgsConstructor позволяют заинжектить без @Autowired
     private final EmployeeService employeeService;
 
-    // Get employees
     @GetMapping
     public List<EmployeeDto> getAllEmployees() {
         return employeeService.findAll();
     }
 
-    // Get an employee by id
     @GetMapping("/{id}")
     public EmployeeDto getEmployeeById(@PathVariable(value = "id") Long employeeId) {
         return employeeService.findById(employeeId);
     }
 
-    // Save an employee
     @PostMapping
     public Long createEmployee(@RequestBody EmployeeDto employee) {
-        return this.employeeService.create(employee); // Автоматически смаппится объект из json в POJO
+        return this.employeeService.create(employee);
     }
 
-    // Update an employee
     @PutMapping("/{id}")
     public EmployeeDto updateEmployee(
             @PathVariable(value = "id") Long employeeId,
@@ -42,7 +37,6 @@ public class EmployeeController {
         return employeeService.update(employeeId, employeeDetails);
     }
 
-    // Delete an employee
     @DeleteMapping("/{id}")
     public void deleteEmployee(@PathVariable(value = "id") Long employeeId) {
         this.employeeService.delete(employeeId);

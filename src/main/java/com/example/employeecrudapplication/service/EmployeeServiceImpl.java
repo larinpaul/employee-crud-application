@@ -7,7 +7,6 @@ import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import com.example.employeecrudapplication.validator.EmployeeValidator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -37,24 +36,17 @@ public class EmployeeServiceImpl implements EmployeeService {
         for (Employee employee : all) {
             EmployeeDto employeeDto = employeeMapper.toDto(employee);
             employeesDto.add(employeeDto);
-        } // Вообще это можно сделать в одну конструкцию, использовав streamAPI (можно поискать потом)
+        }
         return employeesDto;
-        // Для тестирования мы сперва МОКАЕМ репозиторий
-        // Мок ничего не может возвращаеть,
-        // Поэтому findAll мы можем застабить
-        //
-        // И здесь ещё намечается один спай.
-        // Вообще это маппер, но это долго, поэтому можно иногда
-        // использовать спай.
     }
 
-    public EmployeeDto findById(Long employeeId) { // Не воспринимай метод как магию, РАЗБЕРИСЬ что в нем происходит
+    public EmployeeDto findById(Long employeeId) {
         return employeeRepository.findById(employeeId)
                 .map(employeeMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
     }
 
-    public EmployeeDto update(Long employeeId, EmployeeDto employeeDto) { // DTO - Мы берём от пользователя
+    public EmployeeDto update(Long employeeId, EmployeeDto employeeDto) {
         employeeValidator.validToUpdate(employeeDto);
 
         Employee employee = employeeRepository.findById(employeeId)
@@ -70,6 +62,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     public void delete(Long employeeId) {
+        if (!employeeRepository.existsById(employeeId)) {
+            throw new EntityNotFoundException("Employee not found");
+        }
         employeeRepository.deleteById(employeeId);
     }
 

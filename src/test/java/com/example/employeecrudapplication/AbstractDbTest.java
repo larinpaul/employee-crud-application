@@ -6,10 +6,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.time.Duration;
 
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
@@ -17,9 +14,6 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 @Testcontainers
 @ContextConfiguration(initializers = {AbstractDbTest.Initializer.class})
 public class AbstractDbTest {
-
-    // Попробуем поднять ТестКонтейнер, чтобы он поднимался перед тестами,
-    // и чтобы все тесты баз данных наследовали AbstractDbTest.java
 
     private static final PostgreSQLContainer<?> postgresContainer =
             new PostgreSQLContainer<>("postgres:13.1-alpine")

@@ -2,15 +2,12 @@ package com.example.employeecrudapplication.controller;
 
 import com.example.employeecrudapplication.AbstractDbTest;
 import com.example.employeecrudapplication.data.repository.EmployeeRepository;
-import com.example.employeecrudapplication.exception.EmployeeValidationException;
 import com.example.employeecrudapplication.exception.ErrorResponse;
 import com.example.employeecrudapplication.model.domain.Employee;
 import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
-import io.restassured.response.ResponseBody;
 import jakarta.persistence.EntityNotFoundException;
-import org.apache.coyote.Response;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
@@ -20,16 +17,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 import java.util.List;
 import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -41,7 +35,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
     @Autowired
     private EmployeeRepository employeeRepository;
 
-    private final String BASE_PATH = "/api/v1/employees";  // Path to endpoint is always string
+    private final String BASE_PATH = "/api/v1/employees";
 
     @Test
     void testGetAllEmployeesEmptyList() {
@@ -55,7 +49,8 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .and()
                 .extract()
                 .body()
-                .as(new TypeRef<>() {});
+                .as(new TypeRef<>() {
+                });
 
         // Assert that the list is returned by the API and is empty
         assertNotNull(list);
@@ -75,97 +70,8 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .extract()
                 .body()
                 .as(new TypeRef<>() {
-                }); // Возвращает результат с Эндпоинта, и мы сможем проверить что вернул Эндпоинт
+                });
     }
-
-    @Test
-    void testGetEmployeeByIdNotFound() {
-        // Given
-        Long employeeId = 9400400400L;
-
-        // When
-        EntityNotFoundException exception = given()
-                .port(port)
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when()
-                .get(BASE_PATH + "/" + employeeId)
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.NOT_FOUND.value())
-                .and()
-                .extract()
-                .body()
-                .as(EntityNotFoundException.class);
-    }
-
-//    @Test
-//    void testEmployeesResponseBody() {
-//        given()
-//                .when()
-//                .get(BASE_PATH)
-//                 .then()
-//                .assertThat()
-//                .statusCode(HttpStatus.OK.value())
-//                .body("id", hasItems(1L, 2L),
-//                        // TODO
-//                        "firstName", hasItems("User-1", "User-2"),
-//                        "lastName", hasItems("Admin", "Supervisor"),
-//                        "id[0]", equalTo(1L),
-//                        "firstName[0]", is(equalTo("User-1")),
-//                        "size()", equalTo(2L)
-//                );
-//    }
-
-    @Test // TODO
-    void testEmployeesResponseBody() throws JSONException {
-        JSONObject employeeParams = new JSONObject();
-        employeeParams.put("firstName", "Newuser1");
-        employeeParams.put("lastName", "Newfamily1");
-        employeeParams.put("firstName", "Newuser2");
-        employeeParams.put("lastName", "Newfamily2");
-
-        given()
-                .port(port)
-                .when()
-                .get(BASE_PATH)
-                .then()
-                .log().all()
-                .assertThat()
-                .statusCode(HttpStatus.OK.value())
-                .body("id", hasItems(1L, 2L),
-                        "name", hasItems("Newuser1", "Newuser2"),
-                        "lastName", hasItems("Newfamily2", "Newfamily2"),
-                        "id[0]", equalTo(1L),
-                        "id[1]", equalTo(2L),
-                        "lastName[0]", is(equalTo("Newuser1")),
-                        "lastName[1]", is(equalTo("Newuser2")),
-                        "size()", equalTo(2)
-                );
-    }
-
-    /*@Test
-    void testGetEmployeeWithParam() {
-        Response empResponse = given()
-                .contentType(ContentType.JSON)
-//                .pathParam("id", "1") // Удалю эту строку, потому что она дублирует функционал .get()
-                .when()
-                .get(BASE_PATH + "/{id}", "1")
-                // Когда хочешь проверить получение сущности по айди, и
-                // если она не найдена, получается 404
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.OK.value())
-                .extract().response();
-        // TODO
-        // Внутри РестАщюрд и Спринга есть маппер, там не нужно передавать стрингу полями
-        // Можно проинициализировать обычный объект, который ты хочешь передать без маппинга
-        // ТАК ЖЕ, как и в других тестах, ты создавал объект, метод, и ты передавать будешь не метод, а боди
-        JsonPath jsonPathObj = empResponse.jsonPath();
-        Assertions.assertEquals(jsonPathObj.getLong("id"), 1L);
-        Assertions.assertEquals(jsonPathObj.getString("firstName"), "User-1");
-        Assertions.assertEquals(jsonPathObj.getString("lastName"), "Admin");
-    }*/
 
     @Test
     void shouldObtainEmployee() {
@@ -183,35 +89,8 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 });
     }
 
-   /*@Test
-    void getEmployeeById() {
-        Employee employee = new Employee();
-        Employee employee = new Employee();
-        Employee employee = new Employee();
-        Employee employee = new Employee();
-        Employee employee = new Employee();
-
-        employeeDto.setFirstName("Newuser");
-        employeeDto.setLastName("Newfamily");
-        employeeDto.setEmail("Newuser@mail.com");
-
-        employeeDto.setFirstName("Newuser");
-        employeeDto.setLastName("Newfamily");
-        employeeDto.setEmail("Newuser@mail.com");
-
-        // Это лишь объявление сущностей,
-        // а их нужно создать в БД
-
-        // Метод employeeRepository.save()
-
-        // они появляются в БД
-
-        // А потом вытаскивать через Эндпоинт
-
-    }*/
-
     @Test
-    void testGetEmployee() {
+    void testGetEmployeeById() {
         // Create an employee in the DB
         Employee employee = new Employee();
         employee.setFirstName("Newuser1");
@@ -245,6 +124,28 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .isEqualTo(expected);
     }
 
+
+    @Test
+    void testGetEmployeeByIdNotFound() {
+        // Given
+        Long employeeId = 9400400400L;
+
+        // When
+        EntityNotFoundException exception = given()
+                .port(port)
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .get(BASE_PATH + "/" + employeeId)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .and()
+                .extract()
+                .body()
+                .as(EntityNotFoundException.class);
+    }
+
     @Test
     void testDeleteEmployeeById() {
         // Create an employee in the DB
@@ -268,38 +169,24 @@ public class EmployeeControllerTest extends AbstractDbTest {
         assertFalse(byId);
     }
 
-    /*@Test
-    void extractGetEmployeeResponse1() { // логика тут не совпадает с названием...
-        List<EmployeeDto> list = given()
+    @Test
+    public void testDeleteEmployeeByIdNotFound() {
+        // Given
+        Long employeeId = 9400400400L;
+
+        // When
+        EntityNotFoundException exception = given()
                 .port(port)
                 .when()
-                .get(BASE_PATH)
+                .delete(BASE_PATH + "/" + employeeId)
                 .then()
                 .assertThat()
-                .statusCode(HttpStatus.OK.value())
+                .statusCode(HttpStatus.NOT_FOUND.value())
                 .and()
                 .extract()
-//                .response()
                 .body()
-                .as(new TypeRef<>() {
-                });
-//        System.out.println("response = " + res.asString());
-    }*/
-
-    /*@Test
-    void extractGetEmployeesResponse2() {
-        Response res = given().
-                // baseUri("http://localhost:8080").
-                        when().
-                get("/employees").
-                then().
-                log().all().
-                assertThat().
-                statusCode(200).
-                extract().
-                response();
-        System.out.println("response = " + res.asString());
-    }*/
+                .as(EntityNotFoundException.class);
+    }
 
     @Test
     public void testPostEmployee() {
@@ -308,7 +195,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
         employeeDto.setFirstName("Newuser");
         employeeDto.setLastName("Newfamily");
         employeeDto.setEmail("Newuser@mail.com");
-        // JSON Object не нужно использовать, RestAssured сам может маппить
 
         Long actual = given()
                 .port(port)
@@ -363,7 +249,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
 
         // Then
         assertNotNull(errorResponse);
-//        assertTrue(response.getBody().contains("Invalid email format")); // TODO
     }
 
     @Test
