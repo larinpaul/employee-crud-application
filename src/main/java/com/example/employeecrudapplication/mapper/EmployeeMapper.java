@@ -1,7 +1,7 @@
 package com.example.employeecrudapplication.mapper;
 
-import com.example.employeecrudapplication.model.Employee;
-import com.example.employeecrudapplication.model.EmployeeDto;
+import com.example.employeecrudapplication.model.domain.Employee;
+import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import org.mapstruct.Mapper;
 
 // Now you can create methods that can map employee to employeeDto

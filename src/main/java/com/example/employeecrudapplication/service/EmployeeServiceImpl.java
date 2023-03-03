@@ -2,8 +2,8 @@ package com.example.employeecrudapplication.service;
 
 import com.example.employeecrudapplication.data.repository.EmployeeRepository;
 import com.example.employeecrudapplication.mapper.EmployeeMapper;
-import com.example.employeecrudapplication.model.Employee;
-import com.example.employeecrudapplication.model.EmployeeDto;
+import com.example.employeecrudapplication.model.domain.Employee;
+import com.example.employeecrudapplication.model.dto.EmployeeDto;
 import com.example.employeecrudapplication.validator.EmployeeValidator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class EmployeeServiceImp implements EmployeeService {
+public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final EmployeeValidator employeeValidator;
@@ -36,21 +36,25 @@ public class EmployeeServiceImp implements EmployeeService {
         for (Employee employee : all) {
             EmployeeDto employeeDto = employeeMapper.toDto(employee);
             employeesDto.add(employeeDto);
-        } // Вообще это можно сделать в одну конструкцию, использовав streamAPI (можно поискать потом)
+        }
         return employeesDto;
     }
 
-    public EmployeeDto findById(Long employeeId) { // Не воспринимай метод как магию, РАЗБЕРИСЬ что в нем происходит
+    public EmployeeDto findById(Long employeeId) {
         return employeeRepository.findById(employeeId)
                 .map(employeeMapper::toDto)
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Employee not found by id: %d", employeeId))
+                );
     }
 
-    public EmployeeDto update(Long employeeId, EmployeeDto employeeDto) { // DTO - Мы берём от пользователя
+    public EmployeeDto update(Long employeeId, EmployeeDto employeeDto) {
         employeeValidator.validToUpdate(employeeDto);
 
         Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found for this id :: " + employeeId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Employee not found by id: %d", employeeId))
+                );
 
         employee.setEmail(employeeDto.getEmail());
         employee.setFirstName(employeeDto.getFirstName());
@@ -62,6 +66,12 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     public void delete(Long employeeId) {
+        if (!employeeRepository.existsById(employeeId)) {
+            throw new EntityNotFoundException(
+                    String.format("Employee not found by id: %d", employeeId)
+                );
+        }
         employeeRepository.deleteById(employeeId);
     }
+
 }

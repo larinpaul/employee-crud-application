@@ -1,4 +1,4 @@
-package com.example.employeecrudapplication.model;
+package com.example.employeecrudapplication.model.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "employees" /*you can also provide other details like Schema (public, будет указана) and uniqueConstraints here*/)
+@Table(name = "employees")
 public class Employee {
 
     @Id /* Makes id a primary key */
