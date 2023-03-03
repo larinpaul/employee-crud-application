@@ -3,7 +3,8 @@ package com.example.employeecrudapplication.service;
 import com.example.employeecrudapplication.data.repository.EmployeeRepository;
 import com.example.employeecrudapplication.mapper.EmployeeMapper;
 import com.example.employeecrudapplication.model.domain.Employee;
-import com.example.employeecrudapplication.model.dto.EmployeeDto;
+import com.example.employeecrudapplication.model.dto.EmployeeDetailsDto;
+import com.example.employeecrudapplication.model.dto.ShortEmployeeDto;
 import com.example.employeecrudapplication.validator.EmployeeValidator;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final EmployeeValidator employeeValidator;
     private final EmployeeMapper employeeMapper;
 
-    public Long create(EmployeeDto employeeDto) {
+    public Long create(ShortEmployeeDto employeeDto) {
         employeeValidator.validToCreate(employeeDto);
 
         Employee employee = employeeMapper.toEntity(employeeDto);
@@ -28,27 +29,27 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.save(employee).getId();
     }
 
-    public List<EmployeeDto> findAll() {
+    public List<EmployeeDetailsDto> findAll() {
         List<Employee> all = employeeRepository.findAll();
 
-        List<EmployeeDto> employeesDto = new ArrayList<>();
+        List<EmployeeDetailsDto> employeesDto = new ArrayList<>();
 
         for (Employee employee : all) {
-            EmployeeDto employeeDto = employeeMapper.toDto(employee);
+            EmployeeDetailsDto employeeDto = employeeMapper.toDetailsDto(employee);
             employeesDto.add(employeeDto);
         }
         return employeesDto;
     }
 
-    public EmployeeDto findById(Long employeeId) {
+    public EmployeeDetailsDto findById(Long employeeId) {
         return employeeRepository.findById(employeeId)
-                .map(employeeMapper::toDto)
+                .map(employeeMapper::toDetailsDto)
                 .orElseThrow(() -> new EntityNotFoundException(
                         String.format("Employee not found by id: %d", employeeId))
                 );
     }
 
-    public EmployeeDto update(Long employeeId, EmployeeDto employeeDto) {
+    public ShortEmployeeDto update(Long employeeId, ShortEmployeeDto employeeDto) {
         employeeValidator.validToUpdate(employeeDto);
 
         Employee employee = employeeRepository.findById(employeeId)

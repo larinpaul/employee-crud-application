@@ -1,17 +1,18 @@
 package com.example.employeecrudapplication.service;
 
-import com.example.employeecrudapplication.model.dto.EmployeeDto;
+import com.example.employeecrudapplication.model.dto.EmployeeDetailsDto;
+import com.example.employeecrudapplication.model.dto.ShortEmployeeDto;
 
 import java.util.List;
 
 public interface EmployeeService {
-    Long create(EmployeeDto employeeDto);
+    Long create(ShortEmployeeDto employeeDto);
 
-    List<EmployeeDto> findAll();
+    List<EmployeeDetailsDto> findAll();
 
-    EmployeeDto findById(Long employeeId);
+    EmployeeDetailsDto findById(Long employeeId);
 
-    EmployeeDto update(Long employeeId, EmployeeDto employeeDto);
+    ShortEmployeeDto update(Long employeeId, ShortEmployeeDto employeeDto);
 
     void delete(Long employeeId);
 }

@@ -1,7 +1,8 @@
 package com.example.employeecrudapplication.mapper;
 
 import com.example.employeecrudapplication.model.domain.Employee;
-import com.example.employeecrudapplication.model.dto.EmployeeDto;
+import com.example.employeecrudapplication.model.dto.EmployeeDetailsDto;
+import com.example.employeecrudapplication.model.dto.ShortEmployeeDto;
 import org.mapstruct.Mapper;
 
 // Now you can create methods that can map employee to employeeDto
@@ -12,9 +13,11 @@ import org.mapstruct.Mapper;
 // Если названия не совпадают, то используется аннотация @Mapping
 @Mapper(componentModel = "spring")
 public interface EmployeeMapper {
-    EmployeeDto toDto(Employee employee);
+    ShortEmployeeDto toDto(Employee employee);
 
-    Employee toEntity(EmployeeDto employeeDto); //
+    EmployeeDetailsDto toDetailsDto(Employee employee);
+
+    Employee toEntity(ShortEmployeeDto employeeDto); //
 
 
 }

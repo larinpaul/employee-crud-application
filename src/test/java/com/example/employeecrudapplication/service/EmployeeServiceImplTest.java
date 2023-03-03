@@ -4,7 +4,8 @@ import com.example.employeecrudapplication.data.repository.EmployeeRepository;
 import com.example.employeecrudapplication.exception.EmployeeValidationException;
 import com.example.employeecrudapplication.mapper.EmployeeMapperImpl;
 import com.example.employeecrudapplication.model.domain.Employee;
-import com.example.employeecrudapplication.model.dto.EmployeeDto;
+import com.example.employeecrudapplication.model.dto.EmployeeDetailsDto;
+import com.example.employeecrudapplication.model.dto.ShortEmployeeDto;
 import com.example.employeecrudapplication.validator.EmployeeValidator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ class EmployeeServiceImplTest {
 
         Mockito.when(employeeRepository.save(any())).thenReturn(expected);
 
-        EmployeeDto employeeDto = new EmployeeDto();
+        ShortEmployeeDto employeeDto = new ShortEmployeeDto();
         employeeDto.setFirstName("Tester");
         employeeDto.setLastName("Testily");
         employeeDto.setEmail("tester.testily@mail.com");
@@ -68,7 +69,7 @@ class EmployeeServiceImplTest {
     @DisplayName("Testing create with invalid email")
     void testCreateWithInvalidEmail() {
         // Given
-        EmployeeDto employeeDto = new EmployeeDto();
+        ShortEmployeeDto employeeDto = new ShortEmployeeDto();
         employeeDto.setFirstName("Tester");
         employeeDto.setLastName("Testily");
         employeeDto.setEmail("tester.testily@mail..com"); // Invalid email address
@@ -98,7 +99,7 @@ class EmployeeServiceImplTest {
         Optional<Employee> optionalEmployee = Optional.of(employee);
         Mockito.when(employeeRepository.findById(employeeId)).thenReturn(optionalEmployee);
 
-        EmployeeDto actual = employeeService.findById(employeeId);
+        EmployeeDetailsDto actual = employeeService.findById(employeeId);
 
         assertEquals("Tester", actual.getFirstName());
         assertEquals("Testily", actual.getLastName());
@@ -125,11 +126,11 @@ class EmployeeServiceImplTest {
         employeeTester23.setEmail("tester23.testily@mail.com");
 
         List<Employee> employeeList = List.of(employeeTester, employeeTester2, employeeTester23);
-        List<EmployeeDto> employeeDtoList = employeeList.stream()
-                .map(employeeMapper::toDto).toList();
+        List<EmployeeDetailsDto> employeeDtoList = employeeList.stream()
+                .map(employeeMapper::toDetailsDto).toList();
 
         Mockito.when(employeeRepository.findAll()).thenReturn(employeeList);
-        List<EmployeeDto> actual = employeeService.findAll();
+        List<EmployeeDetailsDto> actual = employeeService.findAll();
 
         assertEquals(employeeDtoList.size(), actual.size());
 
@@ -148,7 +149,7 @@ class EmployeeServiceImplTest {
         employee.setLastName("Oldlastname");
         employee.setEmail("oldemail@mail.com");
 
-        EmployeeDto employeeDto = new EmployeeDto();
+        ShortEmployeeDto employeeDto = new ShortEmployeeDto();
         employeeDto.setFirstName("Newname");
         employeeDto.setLastName("Newlastname");
         employeeDto.setEmail("newemail@mail.com");
@@ -182,7 +183,7 @@ class EmployeeServiceImplTest {
         employee.setLastName("Oldlastname");
         employee.setEmail("oldemail@mail.com");
 
-        EmployeeDto employeeDto = new EmployeeDto();
+        ShortEmployeeDto employeeDto = new ShortEmployeeDto();
         employeeDto.setFirstName("Newname");
         employeeDto.setLastName("Newlastname");
         employeeDto.setEmail("newemail@mail.com");
@@ -199,7 +200,7 @@ class EmployeeServiceImplTest {
         when(employeeRepository.save(any(Employee.class))).thenReturn(updatedEmployee);
 
         // When
-        EmployeeDto result = employeeService.update(employeeId, employeeDto);
+        ShortEmployeeDto result = employeeService.update(employeeId, employeeDto);
 
         // Then
         verify(employeeRepository).save(any(Employee.class));
@@ -215,7 +216,7 @@ class EmployeeServiceImplTest {
     void testUpdateWithInvalidEmail() {
         // Given
         Long employeeId = 1L;
-        EmployeeDto employeeDto = new EmployeeDto();
+        ShortEmployeeDto employeeDto = new ShortEmployeeDto();
         employeeDto.setFirstName("Tester");
         employeeDto.setLastName("Testily");
         employeeDto.setEmail("tester.testily@mail..com");
