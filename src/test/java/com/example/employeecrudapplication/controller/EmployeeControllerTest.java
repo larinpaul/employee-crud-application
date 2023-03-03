@@ -34,6 +34,11 @@ public class EmployeeControllerTest extends AbstractDbTest {
 
     private final String BASE_PATH = "/api/v1/employees";
 
+    @AfterEach
+    void clearDbData() {
+        employeeRepository.deleteAll();
+    }
+
     @Test
     void testGetAllEmployeesEmptyList() {
         List<EmployeeDto> list = given()
@@ -100,7 +105,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 });
 
         assertNotNull(list);
-        assertTrue(list.size() >= 1);
+        assertTrue(list.size() == 2);
     }
 
     @Test
@@ -110,15 +115,16 @@ public class EmployeeControllerTest extends AbstractDbTest {
         employee1.setFirstName("Newuser1");
         employee1.setLastName("Newfamily1");
         employee1.setEmail("Newuser1@mail.com");
-        Long employeeId1 = employeeRepository.save(employee1).getId();
+        employeeRepository.save(employee1);
 
         Employee employee2 = new Employee();
         employee2.setFirstName("Newuser2");
         employee2.setLastName("Newfamily2");
         employee2.setEmail("Newuser2@mail.com");
-        Long employeeId2 = employeeRepository.save(employee2).getId();
+        employee2.setId(2L);
+        employeeRepository.save(employee2);
 
-        List<Employee> list = given()
+        List<EmployeeDto> list = given()
                 .port(port)
                 .when()
                 .get(BASE_PATH)
@@ -132,13 +138,11 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 });
 
         assertNotNull(list);
-        assertTrue(list.size() >= 1);
+        assertTrue(list.size() == 2);
 
-        assertThat(employee1).usingRecursiveComparison()
-                .isEqualTo(list.get(0));
-//        assertThat(employee2).usingRecursiveComparison()
-//                .isEqualTo(list.get(1));
-
+        assertThat(List.of(employee1, employee2)).usingRecursiveComparison()
+                .ignoringFields("id")
+                .isEqualTo(list);
     }
 
     @Test
@@ -377,11 +381,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
 
         assertNotNull(exception);
         assertEquals("Employee not found for this id :: " + employeeId, exception.getMessage());
-    }
-
-    @AfterEach
-    void clearDbData() {
-        employeeRepository.deleteAll();
     }
 
 }
