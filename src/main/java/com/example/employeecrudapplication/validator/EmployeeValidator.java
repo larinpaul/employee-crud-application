@@ -1,7 +1,7 @@
 package com.example.employeecrudapplication.validator;
 
 import com.example.employeecrudapplication.exception.EmployeeValidationException;
-import com.example.employeecrudapplication.model.dto.EmployeeDto;
+import com.example.employeecrudapplication.model.dto.ShortEmployeeDto;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +22,7 @@ public class EmployeeValidator {
         }
     }
 
-    public void validateFields(EmployeeDto employee) {
+    public void validateFields(ShortEmployeeDto employee) {
         if (employee == null) {
             throw new EmployeeValidationException("You haven't provided the Employee data");
         }
@@ -35,11 +35,11 @@ public class EmployeeValidator {
         validateEmail(employee.getEmail());
     }
 
-    public void validToCreate(EmployeeDto employee) {
+    public void validToCreate(ShortEmployeeDto employee) {
         validateFields(employee);
     }
 
-    public void validToUpdate(EmployeeDto employee) {
+    public void validToUpdate(ShortEmployeeDto employee) {
         validateFields(employee);
     }
 

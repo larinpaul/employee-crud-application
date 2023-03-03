@@ -4,7 +4,8 @@ import com.example.employeecrudapplication.AbstractDbTest;
 import com.example.employeecrudapplication.data.repository.EmployeeRepository;
 import com.example.employeecrudapplication.exception.ErrorResponse;
 import com.example.employeecrudapplication.model.domain.Employee;
-import com.example.employeecrudapplication.model.dto.EmployeeDto;
+import com.example.employeecrudapplication.model.dto.EmployeeDetailsDto;
+import com.example.employeecrudapplication.model.dto.ShortEmployeeDto;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import jakarta.persistence.EntityNotFoundException;
@@ -54,7 +55,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
         employee2.setEmail("Newuser2@mail.com");
         employeeRepository.save(employee2);
 
-        List<EmployeeDto> list = given()
+        List<EmployeeDetailsDto> list = given()
                 .port(port)
                 .when()
                 .get(BASE_PATH)
@@ -87,7 +88,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
         employee2.setId(2L);
         employeeRepository.save(employee2);
 
-        List<EmployeeDto> list = given()
+        List<EmployeeDetailsDto> list = given()
                 .port(port)
                 .when()
                 .get(BASE_PATH)
@@ -110,7 +111,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
 
     @Test
     void testGetAllEmployeesEmptyList() {
-        List<EmployeeDto> list = given()
+        List<EmployeeDetailsDto> list = given()
                 .port(port)
                 .when()
                 .get(BASE_PATH)
@@ -138,13 +139,13 @@ public class EmployeeControllerTest extends AbstractDbTest {
         long employeeId = employeeRepository.save(employee).getId();
 
         // Create an expected employee
-        EmployeeDto expected = new EmployeeDto();
+        EmployeeDetailsDto expected = new EmployeeDetailsDto();
         expected.setFirstName("Newuser1");
         expected.setLastName("Newfamily1");
         expected.setEmail("Newuser1@mail.com");
 
         // Validate status code and extract the body of the request
-        EmployeeDto actual = given()
+        EmployeeDetailsDto actual = given()
                 .port(port)
                 .contentType(ContentType.JSON)
                 .when()
@@ -155,11 +156,12 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .and()
                 .extract()
                 .body()
-                .as(EmployeeDto.class);
+                .as(EmployeeDetailsDto.class);
 
         // Check if the returned employee matches the expected one
         assertNotNull(actual);
         assertThat(actual).usingRecursiveComparison()
+                .ignoringFields("id")
                 .isEqualTo(expected);
     }
 
@@ -234,7 +236,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
 
     @Test
     public void testPostEmployee() {
-        EmployeeDto employeeDto = new EmployeeDto();
+        ShortEmployeeDto employeeDto = new ShortEmployeeDto();
 
         employeeDto.setFirstName("Newuser");
         employeeDto.setLastName("Newfamily");
@@ -270,7 +272,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
     @Test
     void testPostEmployeeIncorrectEmail() {
         // Given
-        EmployeeDto employeeDto = new EmployeeDto();
+        ShortEmployeeDto employeeDto = new ShortEmployeeDto();
         employeeDto.setFirstName("Newuser");
         employeeDto.setLastName("Newfamily");
         employeeDto.setEmail("invalidemail");
@@ -297,7 +299,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
     @Test
     void testUpdateEmployee() {
         // Create an employee
-        EmployeeDto employeeDto = new EmployeeDto();
+        ShortEmployeeDto employeeDto = new ShortEmployeeDto();
         employeeDto.setFirstName("Newuser");
         employeeDto.setLastName("Newfamily");
 
@@ -306,13 +308,13 @@ public class EmployeeControllerTest extends AbstractDbTest {
         Long employeeId = employeeRepository.save(employee).getId();
 
         // Update the employee
-        EmployeeDto updatedEmployeeDto = new EmployeeDto();
+        ShortEmployeeDto updatedEmployeeDto = new ShortEmployeeDto();
         updatedEmployeeDto.setFirstName("Updateduser");
         updatedEmployeeDto.setLastName("Updatedfamily");
         updatedEmployeeDto.setEmail("Updateduser@mail.com");
 
         // Verify the status code and extract the body
-        EmployeeDto actual =
+        ShortEmployeeDto actual =
                 given()
                         .port(port)
                         .contentType(ContentType.JSON)
@@ -325,7 +327,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
                         .and()
                         .extract()
                         .body()
-                        .as(EmployeeDto.class);
+                        .as(ShortEmployeeDto.class);
 
         assertNotNull(actual);
 
@@ -344,14 +346,13 @@ public class EmployeeControllerTest extends AbstractDbTest {
     @Test
     void testUpdateEmployeeNotFound() {
         // Given
-        EmployeeDto employeeDto = new EmployeeDto();
+        ShortEmployeeDto employeeDto = new ShortEmployeeDto();
         employeeDto.setFirstName("Newuser");
         employeeDto.setLastName("Newfamily");
         employeeDto.setEmail("newuser@mail.com");
         // Non-existent employee ID to be updated
         long employeeId = 9400400400L;
 
-        // When
         // Verify the status code and extract the body
         EntityNotFoundException exception =
                 given()
@@ -368,7 +369,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
                         .body()
                         .as(EntityNotFoundException.class);
 
-        // Then
         assertNotNull(exception);
         assertEquals("Employee not found by id: " + employeeId, exception.getMessage());
     }
