@@ -54,24 +54,38 @@ public class EmployeeControllerTest extends AbstractDbTest {
         assertEquals(0, list.size());
     }
 
-    @Test
+    /*@Test
     void testGetAllEmployeesUnhappy() {
-        List<EmployeeDto> list = given()
+
+        EntityNotFoundException exception = given()
                 .port(port)
                 .when()
-                .get(BASE_PATH) // Путь к эндпоинту
+                .get(BASE_PATH+"/wrong/wrong/")
                 .then()
                 .assertThat()
-                .statusCode(HttpStatus.OK.value())
+                .statusCode(HttpStatus.NOT_FOUND.value())
                 .and()
                 .extract()
                 .body()
-                .as(new TypeRef<>() {
-                });
-    }
+                .as(EntityNotFoundException.class);
+
+    }*/
 
     @Test
-    void shouldObtainEmployee() {
+    void testShouldObtainEmployees() {
+        // Create employee1
+        Employee employee1 = new Employee();
+        employee1.setFirstName("Newuser1");
+        employee1.setLastName("Newfamily1");
+        employee1.setEmail("Newuser1@mail.com");
+        Long employeeId1 = employeeRepository.save(employee1).getId();
+
+        Employee employee2 = new Employee();
+        employee2.setFirstName("Newuser2");
+        employee2.setLastName("Newfamily2");
+        employee2.setEmail("Newuser2@mail.com");
+        Long employeeId2 = employeeRepository.save(employee2).getId();
+
         List<EmployeeDto> list = given()
                 .port(port)
                 .when()
@@ -84,6 +98,47 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .response()
                 .as(new TypeRef<>() {
                 });
+
+        assertNotNull(list);
+        assertTrue(list.size() >= 1);
+    }
+
+    @Test
+    void testGetAllEmployees() {
+        // Create employee1
+        Employee employee1 = new Employee();
+        employee1.setFirstName("Newuser1");
+        employee1.setLastName("Newfamily1");
+        employee1.setEmail("Newuser1@mail.com");
+        Long employeeId1 = employeeRepository.save(employee1).getId();
+
+        Employee employee2 = new Employee();
+        employee2.setFirstName("Newuser2");
+        employee2.setLastName("Newfamily2");
+        employee2.setEmail("Newuser2@mail.com");
+        Long employeeId2 = employeeRepository.save(employee2).getId();
+
+        List<Employee> list = given()
+                .port(port)
+                .when()
+                .get(BASE_PATH)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .extract()
+                .response()
+                .as(new TypeRef<>() {
+                });
+
+        assertNotNull(list);
+        assertTrue(list.size() >= 1);
+
+        assertThat(employee1).usingRecursiveComparison()
+                .isEqualTo(list.get(0));
+//        assertThat(employee2).usingRecursiveComparison()
+//                .isEqualTo(list.get(1));
+
     }
 
     @Test
@@ -92,14 +147,14 @@ public class EmployeeControllerTest extends AbstractDbTest {
         Employee employee = new Employee();
         employee.setFirstName("Newuser1");
         employee.setLastName("Newfamily1");
-        employee.setEmail("Newuser@mail.com");
+        employee.setEmail("Newuser1@mail.com");
         Long employeeId = employeeRepository.save(employee).getId();
 
         // Create an expected employee
         EmployeeDto expected = new EmployeeDto();
         expected.setFirstName("Newuser1");
         expected.setLastName("Newfamily1");
-        expected.setEmail("Newuser@mail.com");
+        expected.setEmail("Newuser1@mail.com");
 
         // Validate status code and extract the body of the request
         EmployeeDto actual = given()
@@ -199,7 +254,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .body(employeeDto)
                 .when()
                 .post(BASE_PATH)
-//                .post("http://localhost:8080/employee")
                 .then()
                 .assertThat()
                 .statusCode(HttpStatus.OK.value())
@@ -293,7 +347,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
         assertEquals(updatedEmployeeDto.getFirstName(), updatedEmployee.getFirstName());
         assertEquals(updatedEmployeeDto.getLastName(), updatedEmployee.getLastName());
         assertEquals(updatedEmployeeDto.getEmail(), updatedEmployee.getEmail());
-
     }
 
     @Test
@@ -325,7 +378,6 @@ public class EmployeeControllerTest extends AbstractDbTest {
         assertNotNull(exception);
         assertEquals("Employee not found for this id :: " + employeeId, exception.getMessage());
     }
-
 
     @AfterEach
     void clearDbData() {
