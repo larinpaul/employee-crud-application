@@ -43,14 +43,18 @@ public class EmployeeServiceImpl implements EmployeeService {
     public EmployeeDto findById(Long employeeId) {
         return employeeRepository.findById(employeeId)
                 .map(employeeMapper::toDto)
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found"));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Employee not found by id: %d", employeeId))
+                );
     }
 
     public EmployeeDto update(Long employeeId, EmployeeDto employeeDto) {
         employeeValidator.validToUpdate(employeeDto);
 
         Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(() -> new EntityNotFoundException("Employee not found for this id :: " + employeeId));
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("Employee not found by id: %d", employeeId))
+                );
 
         employee.setEmail(employeeDto.getEmail());
         employee.setFirstName(employeeDto.getFirstName());
@@ -63,7 +67,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     public void delete(Long employeeId) {
         if (!employeeRepository.existsById(employeeId)) {
-            throw new EntityNotFoundException("Employee not found");
+            throw new EntityNotFoundException(
+                    String.format("Employee not found by id: %d", employeeId)
+                );
         }
         employeeRepository.deleteById(employeeId);
     }

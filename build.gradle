@@ -48,8 +48,6 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:${projectLombokVersion}"
     testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
 
-// Можно структурировать ещё
-
 }
 
 tasks.named('test') {

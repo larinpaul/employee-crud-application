@@ -40,56 +40,19 @@ public class EmployeeControllerTest extends AbstractDbTest {
     }
 
     @Test
-    void testGetAllEmployeesEmptyList() {
-        List<EmployeeDto> list = given()
-                .port(port)
-                .when()
-                .get(BASE_PATH)
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.OK.value())
-                .and()
-                .extract()
-                .body()
-                .as(new TypeRef<>() {
-                });
-
-        // Assert that the list is returned by the API and is empty
-        assertNotNull(list);
-        assertEquals(0, list.size());
-    }
-
-    /*@Test
-    void testGetAllEmployeesUnhappy() {
-
-        EntityNotFoundException exception = given()
-                .port(port)
-                .when()
-                .get(BASE_PATH+"/wrong/wrong/")
-                .then()
-                .assertThat()
-                .statusCode(HttpStatus.NOT_FOUND.value())
-                .and()
-                .extract()
-                .body()
-                .as(EntityNotFoundException.class);
-
-    }*/
-
-    @Test
-    void testShouldObtainEmployees() {
+    void testShouldObtainEmployeesList() {
         // Create employee1
         Employee employee1 = new Employee();
         employee1.setFirstName("Newuser1");
         employee1.setLastName("Newfamily1");
         employee1.setEmail("Newuser1@mail.com");
-        Long employeeId1 = employeeRepository.save(employee1).getId();
+        employeeRepository.save(employee1);
 
         Employee employee2 = new Employee();
         employee2.setFirstName("Newuser2");
         employee2.setLastName("Newfamily2");
         employee2.setEmail("Newuser2@mail.com");
-        Long employeeId2 = employeeRepository.save(employee2).getId();
+        employeeRepository.save(employee2);
 
         List<EmployeeDto> list = given()
                 .port(port)
@@ -105,11 +68,11 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 });
 
         assertNotNull(list);
-        assertTrue(list.size() == 2);
+        assertEquals(2, list.size());
     }
 
     @Test
-    void testGetAllEmployees() {
+    void testGetAllEmployeesList() {
         // Create employee1
         Employee employee1 = new Employee();
         employee1.setFirstName("Newuser1");
@@ -138,11 +101,31 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 });
 
         assertNotNull(list);
-        assertTrue(list.size() == 2);
+        assertEquals(2, list.size());
 
         assertThat(List.of(employee1, employee2)).usingRecursiveComparison()
                 .ignoringFields("id")
                 .isEqualTo(list);
+    }
+
+    @Test
+    void testGetAllEmployeesEmptyList() {
+        List<EmployeeDto> list = given()
+                .port(port)
+                .when()
+                .get(BASE_PATH)
+                .then()
+                .assertThat()
+                .statusCode(HttpStatus.OK.value())
+                .and()
+                .extract()
+                .body()
+                .as(new TypeRef<>() {
+                });
+
+        // Assert that the list is returned by the API and is empty
+        assertNotNull(list);
+        assertEquals(0, list.size());
     }
 
     @Test
@@ -152,7 +135,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
         employee.setFirstName("Newuser1");
         employee.setLastName("Newfamily1");
         employee.setEmail("Newuser1@mail.com");
-        Long employeeId = employeeRepository.save(employee).getId();
+        long employeeId = employeeRepository.save(employee).getId();
 
         // Create an expected employee
         EmployeeDto expected = new EmployeeDto();
@@ -184,7 +167,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
     @Test
     void testGetEmployeeByIdNotFound() {
         // Given
-        Long employeeId = 9400400400L;
+        long employeeId = 9400400400L;
 
         // When
         EntityNotFoundException exception = given()
@@ -200,6 +183,8 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .extract()
                 .body()
                 .as(EntityNotFoundException.class);
+
+        assertNotNull(exception);
     }
 
     @Test
@@ -228,7 +213,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
     @Test
     public void testDeleteEmployeeByIdNotFound() {
         // Given
-        Long employeeId = 9400400400L;
+        long employeeId = 9400400400L;
 
         // When
         EntityNotFoundException exception = given()
@@ -242,6 +227,9 @@ public class EmployeeControllerTest extends AbstractDbTest {
                 .extract()
                 .body()
                 .as(EntityNotFoundException.class);
+
+        // Then
+        assertNotNull(exception);
     }
 
     @Test
@@ -361,7 +349,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
         employeeDto.setLastName("Newfamily");
         employeeDto.setEmail("newuser@mail.com");
         // Non-existent employee ID to be updated
-        Long employeeId = 9400400400L;
+        long employeeId = 9400400400L;
 
         // Verify the status code and extract the body
         EntityNotFoundException exception =
@@ -380,7 +368,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
                         .as(EntityNotFoundException.class);
 
         assertNotNull(exception);
-        assertEquals("Employee not found for this id :: " + employeeId, exception.getMessage());
+        assertEquals("Employee not found by id: " + employeeId, exception.getMessage());
     }
 
 }

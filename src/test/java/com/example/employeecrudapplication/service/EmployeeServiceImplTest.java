@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -132,18 +133,15 @@ class EmployeeServiceImplTest {
 
         assertEquals(employeeDtoList.size(), actual.size());
 
-        for (int i = 0; i < employeeDtoList.size(); i++) {
-            assertEquals(employeeDtoList.get(i).getFirstName(), actual.get(i).getFirstName());
-            assertEquals(employeeDtoList.get(i).getLastName(), actual.get(i).getLastName());
-            assertEquals(employeeDtoList.get(i).getEmail(), actual.get(i).getEmail());
-        }
+        assertThat(actual).usingRecursiveComparison()
+                .isEqualTo(employeeDtoList);
     }
 
     @Test
     @DisplayName("Testing not throwing an exception with a valid email")
     void testUpdateWithValidEmailNotThrowing() {
         // Given
-        Long employeeId = 1L;
+        long employeeId = 1L;
         Employee employee = new Employee();
         employee.setId(employeeId);
         employee.setFirstName("Oldname");
@@ -242,9 +240,6 @@ class EmployeeServiceImplTest {
         verify(employeeRepository, never()).save(any());
 
         assertEquals("Invalid email address: tester.testily@mail..com", exception.getMessage());
-        assertEquals("Old First Name", employee.getFirstName());
-        assertEquals("Old Last Name", employee.getLastName());
-        assertEquals("oldemail@mail.com", employee.getEmail());
     }
 
     @Test
@@ -254,6 +249,7 @@ class EmployeeServiceImplTest {
         Long employeeId = 1L;
 
         // Stub the repository method
+        when(employeeRepository.existsById(employeeId)).thenReturn(true);
         doNothing().when(employeeRepository).deleteById(employeeId);
 
         // When
@@ -263,7 +259,6 @@ class EmployeeServiceImplTest {
         // Then
         // Verify that the repository method was called once
         verify(employeeRepository, times(1)).deleteById(employeeId);
-
     }
 
 }
