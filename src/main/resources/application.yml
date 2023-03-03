@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/employees
-    username: postgres
-    password: postgres
+    url: jdbc:postgresql://localhost:${EMPLOYEE_DB_PORT}/${EMPLOYEE_DB_NAME}
+    username: ${EMPLOYEE_DB_USER}
+    password: ${EMPLOYEE_DB_PASSWORD}
   jpa:
     show-sql: true
     hibernate:
