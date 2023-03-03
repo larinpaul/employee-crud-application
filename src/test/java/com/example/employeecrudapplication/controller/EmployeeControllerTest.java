@@ -343,7 +343,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
 
     @Test
     void testUpdateEmployeeNotFound() {
-        // Give
+        // Given
         EmployeeDto employeeDto = new EmployeeDto();
         employeeDto.setFirstName("Newuser");
         employeeDto.setLastName("Newfamily");
@@ -351,6 +351,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
         // Non-existent employee ID to be updated
         long employeeId = 9400400400L;
 
+        // When
         // Verify the status code and extract the body
         EntityNotFoundException exception =
                 given()
@@ -367,6 +368,7 @@ public class EmployeeControllerTest extends AbstractDbTest {
                         .body()
                         .as(EntityNotFoundException.class);
 
+        // Then
         assertNotNull(exception);
         assertEquals("Employee not found by id: " + employeeId, exception.getMessage());
     }
