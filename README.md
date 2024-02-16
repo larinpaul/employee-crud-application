@@ -3,6 +3,16 @@ Technical Specification
 
 Создание монолитного RESTful CRUD-приложения по управлению работниками на языке Java с использованием Spring, JPA, Hibernate, Lombok с подключением PostgreSQL, Redis, Elasticsearch и контейнеризацией через Docker, а также c осуществлением тестирования с помощью Junit и Mockito и Postman.
 
+Что реализовано:
+- RESTful CRUD-приложение (Java, Spring, JPA, Hibernate, Lombok);
+- Подключен PostgreSQL;
+- Контейнеризация через Docker;
+- Тестирование с помощью Junit, Mockito, Postman;
+- Подключен модуль тестирования Testcontainers;
+Что остается реализовать:
+- Подключить Redis;
+- Подключить Elasticsearch.
+
 Цель проекта: создание приложения, которое позволит менеджеру вести реестр работников и изменять его в реальном времени.
 
 Начало проекта: создание нового проекта через IntelliJIDEA с использованием Gradle и Spring Boot, настройкой PostgreSQL.
