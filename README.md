@@ -8,7 +8,7 @@ Technical Specification
 - Подключен PostgreSQL;
 - Контейнеризация через Docker;
 - Тестирование с помощью Junit, Mockito, Postman;
-- Подключен модуль тестирования Testcontainers;
+- Подключен модуль тестирования Testcontainers.
 Что остается реализовать:
 - Подключить Redis;
 - Подключить Elasticsearch.
