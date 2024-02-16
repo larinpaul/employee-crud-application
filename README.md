@@ -1,5 +1,4 @@
-Technical Specification
-Техническое задание
+Technical Specification - Техническое задание
 
 Создание монолитного RESTful CRUD-приложения по управлению работниками на языке Java с использованием Spring, JPA, Hibernate, Lombok с подключением PostgreSQL, Redis, Elasticsearch и контейнеризацией через Docker, а также c осуществлением тестирования с помощью Junit и Mockito и Postman.
 
